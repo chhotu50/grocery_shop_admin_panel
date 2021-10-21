@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
+import axios from "axios";
+import {helper} from './helper';
 import "./scss/style.scss";
 
 const loading = (
@@ -13,6 +15,9 @@ const TheLayout = React.lazy(() => import("./containers/TheLayout"));
 
 // Pages
 const Login = React.lazy(() => import("./views/pages/login/Login"));
+
+axios.defaults.baseURL = helper.BASEURL;
+axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 class App extends Component {
   componentDidMount() {
