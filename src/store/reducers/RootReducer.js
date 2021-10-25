@@ -1,19 +1,16 @@
-import { combineReducers } from 'redux';
-
-import categoryReducer  from './CategoryReducer';
-import tagReducer  from './TagReducer';
-import postReducer from './PostReducer';
-import commentReducer from './CommentReducer';
-import userReducer from './UserReducer';
-import RequestServiceReducer from './RequestServiceReducer';
+import { applyMiddleware, combineReducers, createStore } from "redux";
+import thunkMiddleware from "redux-thunk";
+import categoryReducer from "./CategoryReducer";
+import userReducer from "./UserReducer";
+import productReducer from "./ProductReducer";
+import changeState from "./changeState";
 
 const rootReducer = combineReducers({
-   category: categoryReducer,
-   tag: tagReducer,
-   post: postReducer,
-   comment: commentReducer,
-   user: userReducer,
-   requestService:RequestServiceReducer
+    products: productReducer,
+    categories: categoryReducer,
+    user: userReducer,
+    changeState,
 });
 
-export default rootReducer;
+const store = createStore(rootReducer, applyMiddleware(thunkMiddleware));
+export default store;

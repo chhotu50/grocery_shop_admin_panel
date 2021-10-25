@@ -1,4 +1,4 @@
-import * as UserTypes from '../actionTypes/UserTypes';
+import * as UserTypes from "../actionTypes/UserTypes";
 
 const initialState = {
     users: {},
@@ -7,13 +7,13 @@ const initialState = {
         name: "",
         email: "",
         is_admin: 0,
-        status:0
+        status: 0,
     },
     success_message: "",
     error_message: "",
     validation_errors: {},
     list_spinner: false,
-    create_update_spinner: false
+    create_update_spinner: false,
 };
 
 const userReducer = function (state = initialState, action) {
@@ -21,34 +21,34 @@ const userReducer = function (state = initialState, action) {
         case UserTypes.SET_USER_DEFAULTS:
             return {
                 ...state,
-                user: {...state.user},
+                user: { ...state.user },
                 success_message: "",
                 error_message: "",
                 validation_errors: {},
                 list_spinner: false,
-                create_update_spinner: false
+                create_update_spinner: false,
             };
         case UserTypes.LIST_USERS:
             return {
                 ...state,
-                list_spinner: true
+                list_spinner: true,
             };
         case UserTypes.LIST_USERS_SUCCESS:
             return {
                 ...state,
                 users: action.data,
-                list_spinner: false
+                list_spinner: false,
             };
         case UserTypes.LIST_USERS_FAILURE:
             return {
                 ...state,
                 error_message: action.error,
-                list_spinner: false
+                list_spinner: false,
             };
         case UserTypes.CREATE_USERS:
             return {
                 ...state,
-                create_update_spinner: true
+                create_update_spinner: true,
             };
         case UserTypes.CREATE_USERS_SUCCESS:
             return {
@@ -57,7 +57,7 @@ const userReducer = function (state = initialState, action) {
                 user: action.data.data,
                 success_message: action.data.message,
                 error_message: "",
-                validation_errors: {}
+                validation_errors: {},
             };
         case UserTypes.CREATE_USERS_FAILURE:
             return {
@@ -65,29 +65,29 @@ const userReducer = function (state = initialState, action) {
                 create_update_spinner: false,
                 error_message: action.error.message,
                 validation_errors: action.error.errors,
-                success_message: ""
+                success_message: "",
             };
         case UserTypes.SHOW_USER:
             return {
                 ...state,
-                create_update_spinner: true
+                create_update_spinner: true,
             };
         case UserTypes.SHOW_USER_SUCCESS:
             return {
                 ...state,
                 create_update_spinner: false,
-                user: {...action.data.data}
+                user: { ...action.data.data },
             };
         case UserTypes.SHOW_USER_FAILURE:
             return {
                 ...state,
                 create_update_spinner: false,
-                error_message: action.error.message
+                error_message: action.error.message,
             };
         case UserTypes.EDIT_USERS:
             return {
                 ...state,
-                create_update_spinner: true
+                create_update_spinner: true,
             };
         case UserTypes.EDIT_USERS_SUCCESS:
             return {
@@ -96,7 +96,7 @@ const userReducer = function (state = initialState, action) {
                 user: action.data.data,
                 success_message: action.data.message,
                 error_message: "",
-                validation_errors: {}
+                validation_errors: {},
             };
         case UserTypes.EDIT_USERS_FAILURE:
             return {
@@ -104,30 +104,30 @@ const userReducer = function (state = initialState, action) {
                 create_update_spinner: false,
                 error_message: action.error.message,
                 validation_errors: action.error.errors,
-                success_message: ""
+                success_message: "",
             };
         case UserTypes.DELETE_USERS:
             return {
                 ...state,
-                list_spinner: true
+                list_spinner: true,
             };
         case UserTypes.DELETE_USERS_SUCCESS:
             let users = state.users;
-            users.data = state.users.data.filter(item => item.id != action.id);
+            users.data = state.users.data.filter((item) => item.id !== action.id);
 
             return {
                 ...state,
                 list_spinner: false,
                 users: users,
                 success_message: action.message,
-                error_message: ''
+                error_message: "",
             };
         case UserTypes.DELETE_USERS_FAILURE:
             return {
                 ...state,
                 list_spinner: false,
                 error_message: action.error.message,
-                success_message: ''
+                success_message: "",
             };
         case UserTypes.RESET_USER_FIELDS:
             return {
@@ -136,15 +136,9 @@ const userReducer = function (state = initialState, action) {
                     id: "",
                     name: "",
                     email: "",
-<<<<<<< HEAD
-                    password: "",
                     is_admin: 0,
-                    username:'',
-=======
-                    is_admin: 0,
-                    status:0
->>>>>>> 0006584f1bf74601e8ce3fc68737db13d8ca7600
-                }
+                    status: 0,
+                },
             };
         case UserTypes.HANDLE_USER_CHANGE:
             return handleChange(state, action);
@@ -156,38 +150,36 @@ const userReducer = function (state = initialState, action) {
 /**
  * handle field change
  */
-function handleChange(state, action)
-{
-    if(action.field !== 'status') {
+function handleChange(state, action) {
+    if (action.field !== "status") {
         return {
             ...state,
-            user: {...state.user, [action.field]: action.data}
+            user: { ...state.user, [action.field]: action.data },
         };
     } else {
-        if(action.field==='status'){
+        if (action.field === "status") {
             let checked = state.user.status;
-            if(action.checked == true) {
+            if (action.checked === true) {
                 checked = 1;
-            } else if(action.checked == false) {
+            } else if (action.checked === false) {
                 checked = 0;
             }
-    
-            return {
-                ...state,
-                user: {...state.user, status: checked}
-            };
 
-        }else{
-            let checked = state.user.is_admin;
-            if(action.checked == true) {
-                checked = 1;
-            } else if(action.checked == false) {
-                checked = 0;
-            }
-    
             return {
                 ...state,
-                user: {...state.user, is_admin: checked}
+                user: { ...state.user, status: checked },
+            };
+        } else {
+            let checked = state.user.is_admin;
+            if (action.checked === true) {
+                checked = 1;
+            } else if (action.checked === false) {
+                checked = 0;
+            }
+
+            return {
+                ...state,
+                user: { ...state.user, is_admin: checked },
             };
         }
     }

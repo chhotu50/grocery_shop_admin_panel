@@ -2,21 +2,27 @@ import axios from "axios";
 
 const Category = {
     list: () => {
-        return axios.get('categories');
+        return axios.get("categories");
     },
     add: (payload) => {
         let data = Category.toFormData(payload);
-        return axios.post('categories',data, {headers: {Authorization: localStorage.getItem("user.token")}});
+        return axios.post("categories", data, {
+            headers: { Authorization: localStorage.getItem("user.token") },
+        });
     },
     showOne: (id) => {
-        return axios.get('categories/' + id);
+        return axios.get("categories/" + id);
     },
     edit: (payload, id) => {
         let data = Category.toFormData(payload);
-        return axios.post('/updateData/', data, {headers: {Authorization: localStorage.getItem("user.token")}});
+        return axios.post("/updateData/", data, {
+            headers: { Authorization: localStorage.getItem("user.token") },
+        });
     },
     remove: (id) => {
-        return axios.delete('categories/' + id, {headers: {Authorization: localStorage.getItem("user.token")}});
+        return axios.delete("categories/" + id, {
+            headers: { Authorization: localStorage.getItem("user.token") },
+        });
     },
 
     toFormData: (payload) => {
@@ -25,7 +31,7 @@ const Category = {
             formData.append(key, payload[key]);
         }
         return formData;
-    }
+    },
 };
 
 export default Category;

@@ -1,4 +1,5 @@
-import { LIST_CATEGORIES,
+import {
+    LIST_CATEGORIES,
     LIST_CATEGORIES_SUCCESS,
     LIST_CATEGORIES_FAILURE,
     CREATE_CATEGORIES,
@@ -16,10 +17,10 @@ import { LIST_CATEGORIES,
     SET_CATEGORY_DEFAULTS,
     HANDLE_CATEGORY_TITLE,
     LIST_ALL_CATEGORIES,
-    RESET_FIELDS
-} from '../actionTypes/CategoryTypes';
+    RESET_FIELDS,
+} from "../actionTypes/CategoryTypes";
 
-import Category from '../../apis/Category';
+import Category from "../../apis/Category";
 
 // function handleCategoryTitle(title)
 // {
@@ -39,43 +40,41 @@ function handleCategoryTitle(field, value) {
             data: value,
             field,
         });
-    }
+    };
 }
 
 function setCategoryDefaults() {
-
     return function (dispatch, getState) {
-
         dispatch({
-            type: SET_CATEGORY_DEFAULTS
+            type: SET_CATEGORY_DEFAULTS,
         });
-    }
+    };
 }
 
 /**
  * list Categories action
  */
 function listCategories(page = 1) {
-    
     return function (dispatch, getState) {
-
         // start sending request (first dispatch)
         dispatch({
-            type: LIST_CATEGORIES
+            type: LIST_CATEGORIES,
         });
         // async call must dispatch action whether on success or failure
-        Category.list(page).then(response => {
-            dispatch({
-                type: LIST_CATEGORIES_SUCCESS,
-                data: response.data.data
+        Category.list(page)
+            .then((response) => {
+                dispatch({
+                    type: LIST_CATEGORIES_SUCCESS,
+                    data: response.data.data,
+                });
+            })
+            .catch((error) => {
+                dispatch({
+                    type: LIST_CATEGORIES_FAILURE,
+                    error: error.response,
+                });
             });
-        }).catch(error => {
-            dispatch({
-                type: LIST_CATEGORIES_FAILURE,
-                error: error.response.data
-            });
-        });
-    }
+    };
 }
 
 /**
@@ -84,168 +83,161 @@ function listCategories(page = 1) {
  * in other forms
  */
 function listAllCategories() {
-
     return function (dispatch, getState) {
-
         // async call
-        Category.listAll().then(response => {
+        Category.listAll().then((response) => {
             dispatch({
                 type: LIST_ALL_CATEGORIES,
-                data: response.data.data
+                data: response.data.data,
             });
         });
-    }
+    };
 }
 
 /**
  * add category action
  */
-function addCategory (title, cb) {
-
-    return function(dispatch, getState) {
-
+function addCategory(title, cb) {
+    return function (dispatch, getState) {
         // start creation show spinner
         dispatch({
-            type: CREATE_CATEGORIES
+            type: CREATE_CATEGORIES,
         });
 
         // async call must dispatch action whether on success or failure
-        Category.add(title).then(response => {
-            dispatch({
-                type: CREATE_CATEGORIES_SUCCESS,
-                data: response.data
-            });
+        Category.add(title)
+            .then((response) => {
+                dispatch({
+                    type: CREATE_CATEGORIES_SUCCESS,
+                    data: response.data,
+                });
 
-            cb();
-        }).catch(error => {
-            dispatch({
-                type: CREATE_CATEGORIES_FAILURE,
-                error: error.response.data
+                cb();
             })
-        });
-    }
+            .catch((error) => {
+                dispatch({
+                    type: CREATE_CATEGORIES_FAILURE,
+                    error: error.response.data,
+                });
+            });
+    };
 }
 
 /**
  * show category action
  */
-function showCategory(id)
-{
+function showCategory(id) {
     return function (dispatch, getState) {
         // start creation show spinner
         dispatch({
-            type: SHOW_CATEGORY
+            type: SHOW_CATEGORY,
         });
-
 
         // async call must dispatch action whether on success or failure
-        Category.showOne(id).then(response => {
-            dispatch({
-                type: SHOW_CATEGORY_SUCCESS,
-                data: response.data
+        Category.showOne(id)
+            .then((response) => {
+                dispatch({
+                    type: SHOW_CATEGORY_SUCCESS,
+                    data: response.data,
+                });
+            })
+            .catch((error) => {
+                dispatch({
+                    type: SHOW_CATEGORY_FAILURE,
+                    error: error.response.data,
+                });
             });
-
-        }).catch(error => {
-            dispatch({
-                type: SHOW_CATEGORY_FAILURE,
-                error: error.response.data
-            });
-        });
-    }
+    };
 }
 
 /**
  * edit category action
  */
-function editCategory(title, id, cb)
-{
+function editCategory(title, id, cb) {
     return function (dispatch, getState) {
         // start creation show spinner
         dispatch({
-            type: EDIT_CATEGORIES
+            type: EDIT_CATEGORIES,
         });
-
 
         // async call must dispatch action whether on success or failure
-        Category.edit(title, id).then(response => {
-            dispatch({
-                type: EDIT_CATEGORIES_SUCCESS,
-                data: response.data
-            });
+        Category.edit(title, id)
+            .then((response) => {
+                dispatch({
+                    type: EDIT_CATEGORIES_SUCCESS,
+                    data: response.data,
+                });
 
-            cb();
-        }).catch(error => {
-            dispatch({
-                type: EDIT_CATEGORIES_FAILURE,
-                error: error.response.data
+                cb();
             })
-        });
-    }
-    
+            .catch((error) => {
+                dispatch({
+                    type: EDIT_CATEGORIES_FAILURE,
+                    error: error.response.data,
+                });
+            });
+    };
 }
 
 /**
  * delete category action
  */
-function deleteCategory(id)
-{
+function deleteCategory(id) {
     return function (dispatch, getState) {
-
         // start creation show spinner
         dispatch({
-            type: DELETE_CATEGORIES
+            type: DELETE_CATEGORIES,
         });
-
 
         // async call must dispatch action whether on success or failure
-        Category.remove(id).then(response => {
-            dispatch({
-                type: DELETE_CATEGORIES_SUCCESS,
-                message: response.data.message,
-                id: id
-            });
-        }).catch(error => {
-            dispatch({
-                type: DELETE_CATEGORIES_FAILURE,
-                error: error.response.data
+        Category.remove(id)
+            .then((response) => {
+                dispatch({
+                    type: DELETE_CATEGORIES_SUCCESS,
+                    message: response.data.message,
+                    id: id,
+                });
             })
-        });
-    }
+            .catch((error) => {
+                dispatch({
+                    type: DELETE_CATEGORIES_FAILURE,
+                    error: error.response.data,
+                });
+            });
+    };
 }
 
-function parmanentDeleteCategory(id)
-{
+function parmanentDeleteCategory(id) {
     return function (dispatch, getState) {
-
         // start creation show spinner
         dispatch({
-            type: DELETE_CATEGORIES
+            type: DELETE_CATEGORIES,
         });
-
 
         // async call must dispatch action whether on success or failure
-        Category.removeTrash(id).then(response => {
-            dispatch({
-                type: DELETE_CATEGORIES_SUCCESS,
-                message: response.data.message,
-                id: id
-            });
-        }).catch(error => {
-            dispatch({
-                type: DELETE_CATEGORIES_FAILURE,
-                error: error.response.data
+        Category.removeTrash(id)
+            .then((response) => {
+                dispatch({
+                    type: DELETE_CATEGORIES_SUCCESS,
+                    message: response.data.message,
+                    id: id,
+                });
             })
-        });
-    }
+            .catch((error) => {
+                dispatch({
+                    type: DELETE_CATEGORIES_FAILURE,
+                    error: error.response.data,
+                });
+            });
+    };
 }
 
 function resetFields() {
-
     return function (dispatch, getState) {
         dispatch({
-            type: RESET_FIELDS
+            type: RESET_FIELDS,
         });
-    }
+    };
 }
 
 export {
@@ -258,5 +250,5 @@ export {
     parmanentDeleteCategory,
     setCategoryDefaults,
     listAllCategories,
-    resetFields
+    resetFields,
 };

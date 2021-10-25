@@ -1,4 +1,5 @@
-import { LIST_CATEGORIES,
+import {
+    LIST_CATEGORIES,
     LIST_CATEGORIES_SUCCESS,
     LIST_CATEGORIES_FAILURE,
     CREATE_CATEGORIES,
@@ -16,12 +17,12 @@ import { LIST_CATEGORIES,
     SET_CATEGORY_DEFAULTS,
     HANDLE_CATEGORY_TITLE,
     LIST_ALL_CATEGORIES,
-    RESET_FIELDS
-} from '../actionTypes/CategoryTypes';
+    RESET_FIELDS,
+} from "../actionTypes/CategoryTypes";
 
 const initialState = {
-    categories: {},        // used in listing page
-    all_categories: [],    // used in dropdowns
+    categories: {}, // used in listing page
+    all_categories: [], // used in dropdowns
     category: {
         id: "",
         title: "",
@@ -32,7 +33,7 @@ const initialState = {
     error_message: "",
     validation_errors: null,
     list_spinner: false,
-    create_update_spinner: false
+    create_update_spinner: false,
 };
 
 const categoryReducer = function (state = initialState, action) {
@@ -40,12 +41,12 @@ const categoryReducer = function (state = initialState, action) {
         case SET_CATEGORY_DEFAULTS:
             return {
                 ...state,
-                category: {...state.category},
+                category: { ...state.category },
                 success_message: "",
                 error_message: "",
                 validation_errors: null,
                 list_spinner: false,
-                create_update_spinner: false
+                create_update_spinner: false,
             };
         case HANDLE_CATEGORY_TITLE:
             // return {
@@ -55,30 +56,30 @@ const categoryReducer = function (state = initialState, action) {
             return handleFieldChange(state, action);
         case LIST_CATEGORIES:
             return {
-                ...state, 
-                list_spinner: true
+                ...state,
+                list_spinner: true,
             };
         case LIST_CATEGORIES_SUCCESS:
             return {
                 ...state,
                 categories: action.data,
-                list_spinner: false
+                list_spinner: false,
             };
         case LIST_CATEGORIES_FAILURE:
             return {
                 ...state,
                 error_message: action.error,
-                list_spinner: false
+                list_spinner: false,
             };
         case LIST_ALL_CATEGORIES:
             return {
                 ...state,
-                all_categories: action.data
+                all_categories: action.data,
             };
         case CREATE_CATEGORIES:
             return {
                 ...state,
-                create_update_spinner: true
+                create_update_spinner: true,
             };
         case CREATE_CATEGORIES_SUCCESS:
             return {
@@ -87,7 +88,7 @@ const categoryReducer = function (state = initialState, action) {
                 category: action.data.data,
                 success_message: action.data.message,
                 error_message: "",
-                validation_errors: null
+                validation_errors: null,
             };
         case CREATE_CATEGORIES_FAILURE:
             return {
@@ -95,29 +96,29 @@ const categoryReducer = function (state = initialState, action) {
                 create_update_spinner: false,
                 error_message: action.error.message,
                 validation_errors: action.error.errors,
-                success_message: ""
+                success_message: "",
             };
         case SHOW_CATEGORY:
             return {
                 ...state,
-                create_update_spinner: true
+                create_update_spinner: true,
             };
         case SHOW_CATEGORY_SUCCESS:
             return {
                 ...state,
                 create_update_spinner: false,
-                category: action.data.data
+                category: action.data.data,
             };
         case SHOW_CATEGORY_FAILURE:
             return {
                 ...state,
                 create_update_spinner: false,
-                error_message: action.error.message
+                error_message: action.error.message,
             };
         case EDIT_CATEGORIES:
             return {
                 ...state,
-                create_update_spinner: true
+                create_update_spinner: true,
             };
         case EDIT_CATEGORIES_SUCCESS:
             return {
@@ -126,7 +127,7 @@ const categoryReducer = function (state = initialState, action) {
                 category: action.data.data,
                 success_message: action.data.message,
                 error_message: "",
-                validation_errors: null
+                validation_errors: null,
             };
         case EDIT_CATEGORIES_FAILURE:
             return {
@@ -134,30 +135,30 @@ const categoryReducer = function (state = initialState, action) {
                 create_update_spinner: false,
                 error_message: action.error.message,
                 validation_errors: action.error.errors,
-                success_message: ""
+                success_message: "",
             };
         case DELETE_CATEGORIES:
             return {
                 ...state,
-                list_spinner: true
+                list_spinner: true,
             };
         case DELETE_CATEGORIES_SUCCESS:
             let cats = state.categories;
-            cats.data = state.categories.data.filter(item => item.id != action.id);
+            cats.data = state.categories.data.filter((item) => item.id !== action.id);
 
             return {
                 ...state,
                 list_spinner: false,
                 categories: cats,
                 success_message: action.message,
-                error_message: ''
+                error_message: "",
             };
         case DELETE_CATEGORIES_FAILURE:
             return {
                 ...state,
                 list_spinner: false,
                 error_message: action.error.message,
-                success_message: ''
+                success_message: "",
             };
         case RESET_FIELDS:
             return {
@@ -174,12 +175,11 @@ const categoryReducer = function (state = initialState, action) {
     }
 };
 
-function handleFieldChange(state, action)
-{
-    if(action.field == 'title' || action.field == 'image') {
+function handleFieldChange(state, action) {
+    if (action.field === "title" || action.field === "image") {
         return {
             ...state,
-            category: {...state.category, [action.field]: action.data}
+            category: { ...state.category, [action.field]: action.data },
         };
     }
 }
