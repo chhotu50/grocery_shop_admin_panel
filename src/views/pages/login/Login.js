@@ -15,6 +15,7 @@ import {
     CRow,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
+import axios from "axios";
 
 const Login = (props) => {
     const [user, setUser] = useState({
@@ -29,9 +30,12 @@ const Login = (props) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (user.email !== "" && user.password !== "") {
-            localStorage.setItem("user.token", 123456);
-            localStorage.setItem("user.role", 1);
-            props.history.push("/");
+            axios.post("login", user).then((res) => {
+                console.log(res);
+                localStorage.setItem("user.token", res.data.token);
+                localStorage.setItem("user.role", res.data.user.role);
+                props.history.push("/");
+            });
         }
     };
 

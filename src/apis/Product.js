@@ -6,10 +6,9 @@ const Product = {
     },
     add: (payload) => {
         let data = Product.toFormData(payload);
-        console.log(data);
         return axios
             .post("product", data, {
-                headers: { Authorization: localStorage.getItem("user.token") },
+                headers: { token: localStorage.getItem("user.token") },
             })
             .then((res) => {
                 console.log(res);
@@ -17,7 +16,7 @@ const Product = {
     },
     remove: (id) => {
         return axios.delete("product/" + id, {
-            headers: { Authorization: localStorage.getItem("user.token") },
+            headers: { token: localStorage.getItem("user.token") },
         });
     },
     showOne: (id) => {

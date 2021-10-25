@@ -3,12 +3,16 @@ import MaterialTable from "material-table";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
 import { listProducts } from "src/store/actions/ProductActions";
+import { listCategories } from "src/store/actions/CategoryActions";
 import axios from "axios";
 import Product from "src/apis/Product";
+import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
 
 const Products = (props) => {
     const [productData, setProductData] = useState([]);
-    const [productImg, setProductImg] = useState([]);
+    const [productImg, setProductImg] = useState("");
+    const [categories, setCategories] = useState([]);
+    const [categoryChange, setCategoryChange] = useState({ title: "" });
     const [selectedRows, setSelectedRows] = useState([]);
     const [allData, setAllData] = useState([]);
     const [columns, setColumns] = useState([
@@ -16,7 +20,23 @@ const Products = (props) => {
             title: " Title",
             field: "title",
         },
-        { title: "offer", field: "offer" },
+        {
+            title: "Category",
+            field: "category",
+            editable: "onAdd",
+            render: (rowData) => rowData.category_id.title,
+            editComponent: (props) => {
+                return (
+                    // <select name="categories" id="categories" onChange={handleCategoryChange}>
+                    //     <option>Choose Category:</option>
+                    //     {renderCategories()}
+                    <select name="categories" id="categories">
+                        <option>Choose Category:</option>
+                        {renderCategories()}
+                    </select>
+                );
+            },
+        },
 
         {
             title: "Offer Price",
@@ -28,9 +48,7 @@ const Products = (props) => {
             editable: "onAdd",
             editComponent: (props) => {
                 // console.log(props);
-                return (
-                    <input type="file" name="img" accept="image/*" multiple onChange={handleImg} />
-                );
+                return <input type="file" name="img" accept="image/*" onChange={handleImg} />;
             },
             render: (item) => (
                 <img src={item.photo[0]} alt="" border="1" height="100" width="100" />
@@ -51,10 +69,35 @@ const Products = (props) => {
     ]);
 
     useEffect(() => {
-        // props.listProducts();
-        // setProductData(props.products.products);
         getProductData();
+        getCategories();
     }, []);
+
+    const renderCategories = () => {
+        if (categories.length > 0) {
+            return (
+                <>
+                    {categories.map((item, index) => (
+                        <option key={index} value={item._id}>
+                            {item.title}
+                        </option>
+                    ))}
+                </>
+            );
+        }
+    };
+    // console.log(categories);
+
+    const getCategories = () => {
+        axios
+            .get("categories")
+            .then((res) => {
+                setCategories([...res.data.data]);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
 
     const getProductData = () => {
         axios
@@ -67,18 +110,20 @@ const Products = (props) => {
             });
     };
 
-    const handleImg = (e) => {
-        setProductImg([...e.target.files]);
+    const handleCategoryChange = (e) => {
+        setCategoryChange({ title: e.target.value });
+        console.log(categoryChange);
     };
-    // Update a single row
-    const handleRowUpdate = (newData, oldData, resolve) => {
-        console.log("update row");
+    // ----------------------------------------------------------------------------------
+    const handleImg = (e) => {
+        setProductImg(e.target.files[0]);
     };
 
     const handleBulkDelete = () => {
         const updatedData = productData.filter((row) => !selectedRows.includes(row));
         setProductData(updatedData);
     };
+
     return (
         <div>
             <h1>Products Page</h1>
@@ -94,30 +139,33 @@ const Products = (props) => {
                         new Promise((resolve, reject) => {
                             const updatedRow = [
                                 ...productData,
-                                { ...newRow, photo: [...productImg], category_id: 655 },
+                                {
+                                    ...newRow,
+                                    photo: [...productImg],
+                                    category_id: "61710ea7a2741bbb4faa1a33",
+                                },
                             ];
                             setTimeout(() => {
                                 Product.add({
                                     ...newRow,
                                     photo: [...productImg],
-                                    category_id: 655,
+                                    category_id: "61710ea7a2741bbb4faa1a33",
                                 });
                                 setProductData(updatedRow);
                                 resolve();
                             }, 1000);
                         }),
 
-                    // Update row in table and database
-                    onRowUpdate: (newData, oldData) =>
-                        new Promise((resolve) => {
-                            handleRowUpdate(newData, oldData, resolve);
-                        }),
                     onRowDelete: (selectedRow) =>
                         new Promise((resolve, reject) => {
+                            console.log(selectedRow);
                             const index = selectedRow.tableData.id;
                             const updatedRows = [...productData];
                             updatedRows.splice(index, 1);
                             setTimeout(() => {
+                                Product.remove(selectedRow._id).then(() => {
+                                    console.log("Removed");
+                                });
                                 setProductData(updatedRows);
                                 resolve();
                             }, 1000);
@@ -155,11 +203,13 @@ const Products = (props) => {
 const mapStateToProps = (state, ownProps) => {
     return {
         products: state.products,
+        categories: state.categories,
     };
 };
 const mapDispatchToProps = (dispatch) => {
     return {
         listProducts: () => dispatch(listProducts()),
+        listCategories: () => dispatch(listCategories()),
     };
 };
 
