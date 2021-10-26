@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import FormValidation from "src/helper/FormValidation";
+import Auth from "./../../../apis/Auth";
 import {
   CButton,
   CCard,
@@ -15,19 +17,30 @@ import {
   CRow,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
+import axios from "axios";
 
 const Login = (props) => {
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
+  const [error, setError] = useState({});
+  const handleInputChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+    setError({
+      ...error,
+      [e.target.name]: FormValidation.loginForm(e.target.name, e.target.value),
+    });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (user.email !== "" && user.password !== "") {
-      localStorage.setItem("user.token", 123456);
-      localStorage.setItem("user.role", 1);
-      props.history.push("/");
+      axios.post("login", user).then((res) => {
+        localStorage.setItem("user.token", res.data.token);
+        localStorage.setItem("user.role", res.data.user.role);
+        props.history.push("/");
+      });
     }
   };
 
@@ -56,6 +69,7 @@ const Login = (props) => {
                         name="email"
                       />
                     </CInputGroup>
+                    {error.email && <div>{error.email}</div>}
                     <CInputGroup className="mb-4">
                       <CInputGroupPrepend>
                         <CInputGroupText>
