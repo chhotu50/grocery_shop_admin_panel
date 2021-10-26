@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import FormValidation from "src/helper/FormValidation";
-import Auth from "./../../../apis/Auth";
 import {
     CButton,
     CCard,
@@ -40,6 +39,7 @@ const Login = (props) => {
                 localStorage.setItem("user.token", res.data.token);
                 localStorage.setItem("user.role", res.data.user.role);
                 props.history.push("/");
+                window.location.reload();
             });
         }
     };
