@@ -118,15 +118,6 @@ const Register = (props) => {
                     </CInputGroupPrepend>
                     <CInput
                       type="text"
-<<<<<<< HEAD
-                      placeholder="Contact"
-                      autoComplete="contact"
-                      name="contact"
-                      onChange={handleInputChange}
-                    />
-                  </CInputGroup>
-                  {formError.contact && <div>{formError.contact}</div>}
-=======
                       placeholder="phone"
                       autoComplete="phone"
                       name="phone"
@@ -134,7 +125,6 @@ const Register = (props) => {
                     />
                   </CInputGroup>
                   {formError.phone && <div>{formError.phone}</div>}
->>>>>>> 89feffc3c6ae812856dcfb5cd168461f7d43f200
                   <CRow>
                     <CCol>
                       <CInputGroup className="mb-3">
