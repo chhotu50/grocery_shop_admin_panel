@@ -20,7 +20,7 @@ const Register = (props) => {
   const [data, setData] = useState({
     name: "",
     email: "",
-    contact: "",
+    phone: "",
     address: "",
     password: "",
     confirm_password: "",
@@ -41,7 +41,11 @@ const Register = (props) => {
       formError.name === "" &&
       formError.email === "" &&
       formError.address === "" &&
+<<<<<<< HEAD
       formError.contact === "" &&
+=======
+      formError.phone === "" &&
+>>>>>>> 89feffc3c6ae812856dcfb5cd168461f7d43f200
       formError.password === ""
     ) {
       axios.post("register", data).then((res) => {
@@ -114,6 +118,7 @@ const Register = (props) => {
                     </CInputGroupPrepend>
                     <CInput
                       type="text"
+<<<<<<< HEAD
                       placeholder="Contact"
                       autoComplete="contact"
                       name="contact"
@@ -121,6 +126,15 @@ const Register = (props) => {
                     />
                   </CInputGroup>
                   {formError.contact && <div>{formError.contact}</div>}
+=======
+                      placeholder="phone"
+                      autoComplete="phone"
+                      name="phone"
+                      onChange={handleInputChange}
+                    />
+                  </CInputGroup>
+                  {formError.phone && <div>{formError.phone}</div>}
+>>>>>>> 89feffc3c6ae812856dcfb5cd168461f7d43f200
                   <CRow>
                     <CCol>
                       <CInputGroup className="mb-3">
