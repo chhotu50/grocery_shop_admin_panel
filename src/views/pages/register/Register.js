@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./register.css";
 import {
   CButton,
   CCard,
@@ -27,6 +30,7 @@ const Register = (props) => {
   });
 
   const [formError, setFormError] = useState({});
+  const [error, setError] = useState(true);
   const handleInputChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
     setFormError({
@@ -41,25 +45,35 @@ const Register = (props) => {
       formError.name === "" &&
       formError.email === "" &&
       formError.address === "" &&
-<<<<<<< HEAD
-      formError.contact === "" &&
-=======
       formError.phone === "" &&
->>>>>>> 89feffc3c6ae812856dcfb5cd168461f7d43f200
       formError.password === ""
     ) {
-      axios.post("register", data).then((res) => {
-        localStorage.setItem("user.token", res.data.token);
-        localStorage.setItem("user.role", res.data.data.role);
-        props.history.push("/");
-        console.log(res);
-      });
+      if (data.password === data.confirm_password) {
+        setError(true);
+        axios.post("register", data).then((res) => {
+          if (res.data.status === "true") {
+            localStorage.setItem("user.token", res.data.token);
+            localStorage.setItem("user.role", res.data.user.role);
+            props.history.push("/");
+            window.location.reload();
+            console.log(res);
+          } else {
+            toast.error(res.data.message, {
+              position: toast.POSITION.TOP_CENTER,
+            });
+            console.log(res);
+          }
+        });
+      } else {
+        setError(false);
+      }
     }
   };
 
   return (
     <div className="c-app c-default-layout flex-row align-items-center">
       <CContainer>
+        <ToastContainer />
         <CRow className="justify-content-center">
           <CCol md="9" lg="7" xl="6">
             <CCard className="mx-4">
@@ -81,7 +95,7 @@ const Register = (props) => {
                       onChange={handleInputChange}
                     />
                   </CInputGroup>
-                  {formError.name && <div>{formError.name}</div>}
+                  {formError.name && <div className="validation">{formError.name}</div>}
                   <CInputGroup className="mb-3">
                     <CInputGroupPrepend>
                       <CInputGroupText>@</CInputGroupText>
@@ -94,7 +108,7 @@ const Register = (props) => {
                       onChange={handleInputChange}
                     />
                   </CInputGroup>
-                  {formError.email && <div>{formError.email}</div>}
+                  {formError.email && <div className="validation">{formError.email}</div>}
                   <CInputGroup className="mb-3">
                     <CInputGroupPrepend>
                       <CInputGroupText>
@@ -109,7 +123,7 @@ const Register = (props) => {
                       onChange={handleInputChange}
                     />
                   </CInputGroup>
-                  {formError.address && <div>{formError.address}</div>}
+                  {formError.address && <div className="validation">{formError.address}</div>}
                   <CInputGroup className="mb-3">
                     <CInputGroupPrepend>
                       <CInputGroupText>
@@ -124,7 +138,7 @@ const Register = (props) => {
                       onChange={handleInputChange}
                     />
                   </CInputGroup>
-                  {formError.phone && <div>{formError.phone}</div>}
+                  {formError.phone && <div className="validation">{formError.phone}</div>}
                   <CRow>
                     <CCol>
                       <CInputGroup className="mb-3">
@@ -141,7 +155,7 @@ const Register = (props) => {
                           onChange={handleInputChange}
                         />
                       </CInputGroup>
-                      {formError.password && <div>{formError.password}</div>}
+                      {formError.password && <div className="validation">{formError.password}</div>}
                     </CCol>
                     <CCol>
                       <CInputGroup className="mb-4">
@@ -153,11 +167,12 @@ const Register = (props) => {
                         <CInput
                           type="password"
                           placeholder="Repeat password"
-                          autoComplete="new-password"
-                          name="new-password"
+                          autoComplete="confirm_password"
+                          name="confirm_password"
                           onChange={handleInputChange}
                         />
                       </CInputGroup>
+                      {!error ? <div className="validation">not matching</div> : ""}
                     </CCol>
                   </CRow>
                   <CButton color="success" block type="submit">

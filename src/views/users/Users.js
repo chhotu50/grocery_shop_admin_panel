@@ -8,127 +8,127 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router";
 
 const Users = (props) => {
-    const [userData, setUserData] = useState([
-        {
-            name: "ani",
-            email: "ani@gmail.com",
-            phone: "898989889",
-            role: "admin",
-            address: "Mohali",
-        },
-    ]);
-    const [selectedRows, setSelectedRows] = useState([]);
-    const [allData, setAllData] = useState([]);
-    const [columns, setColumns] = useState([
-        {
-            title: " Name",
-            field: "name",
-            validate: (rowData) => Boolean(rowData.name),
-        },
-        { title: "Email", field: "email", validate: (rowData) => Boolean(rowData.email) },
+  const [userData, setUserData] = useState([
+    {
+      name: "ani",
+      email: "ani@gmail.com",
+      phone: "898989889",
+      role: "admin",
+      address: "Mohali",
+    },
+  ]);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [allData, setAllData] = useState([]);
+  const [columns, setColumns] = useState([
+    {
+      title: " Name",
+      field: "name",
+      validate: (rowData) => Boolean(rowData.name),
+    },
+    { title: "Email", field: "email", validate: (rowData) => Boolean(rowData.email) },
 
-        {
-            title: "Phone",
-            field: "phone",
-            validate: (rowData) => Boolean(rowData.phone),
-        },
-        { title: "Role", field: "role" },
-        { title: "Address", field: "address" },
-    ]);
+    {
+      title: "Phone",
+      field: "phone",
+      validate: (rowData) => Boolean(rowData.phone),
+    },
+    { title: "Role", field: "role" },
+    { title: "Address", field: "address" },
+  ]);
 
-    useEffect(() => {
-        props.listUsers();
-    }, []);
-    console.log(props.users);
-    const handleRowAdd = (newData, resolve) => {
-        console.log("add row");
-    };
+  useEffect(() => {
+    props.listUsers();
+  }, []);
 
-    // Update a single row
+  const handleRowAdd = (newData, resolve) => {
+    console.log("add row");
+  };
 
-    const handleRowUpdate = (newData, oldData, resolve) => {
-        console.log("update row");
-    };
+  // Update a single row
 
-    const handleBulkDelete = () => {
-        const updatedData = userData.filter((row) => !selectedRows.includes(row));
-        setUserData(updatedData);
-    };
+  const handleRowUpdate = (newData, oldData, resolve) => {
+    console.log("update row");
+  };
 
-    return (
-        <div>
-            <h2>User List</h2>
-            <MaterialTable
-                title=""
-                columns={columns}
-                data={userData}
-                onSelectionChange={(rows) => {
-                    setSelectedRows(rows);
-                }}
-                editable={{
-                    onRowAdd: (newData) =>
-                        new Promise((resolve) => {
-                            handleRowAdd(newData, resolve);
-                        }),
+  const handleBulkDelete = () => {
+    const updatedData = userData.filter((row) => !selectedRows.includes(row));
+    setUserData(updatedData);
+  };
 
-                    // Update row in table and database
-                    onRowUpdate: (newData, oldData) =>
-                        new Promise((resolve) => {
-                            handleRowUpdate(newData, oldData, resolve);
-                        }),
-                    onRowDelete: (selectedRow) =>
-                        new Promise((resolve, reject) => {
-                            console.log(selectedRow);
-                            const index = selectedRow.tableData.id;
-                            const updatedRows = [...userData];
-                            updatedRows.splice(index, 1);
-                            setTimeout(() => {
-                                setUserData(updatedRows);
-                                resolve();
-                            }, 1000);
-                        }),
-                }}
-                actions={[
-                    {
-                        icon: "delete",
-                        tooltip: "Delete Selected",
-                        onClick: () => {
-                            this.handleBulkDelete();
-                        },
-                    },
-                ]}
-                // Table Options And Styling
-                options={{
-                    headerStyle: {
-                        whiteSpace: "nowrap",
-                        // color: "white",
-                        // backgroundColor: "#992764",
-                    },
-                    rowStyle: {
-                        fontSize: "13px",
-                    },
-                    tableLayout: "auto",
-                    selection: true,
-                    exportButton: true,
-                    exportAllData: true,
-                    addRowPosition: "first",
-                    // paging: false,
-                }}
-                // Add icon with functionality at top when user select multiple rows
-            />
-        </div>
-    );
+  return (
+    <div>
+      <h2>User List</h2>
+      <MaterialTable
+        title=""
+        columns={columns}
+        data={userData}
+        onSelectionChange={(rows) => {
+          setSelectedRows(rows);
+        }}
+        editable={{
+          onRowAdd: (newData) =>
+            new Promise((resolve) => {
+              handleRowAdd(newData, resolve);
+            }),
+
+          // Update row in table and database
+          onRowUpdate: (newData, oldData) =>
+            new Promise((resolve) => {
+              handleRowUpdate(newData, oldData, resolve);
+            }),
+          onRowDelete: (selectedRow) =>
+            new Promise((resolve, reject) => {
+              console.log(selectedRow);
+              const index = selectedRow.tableData.id;
+              const updatedRows = [...userData];
+              updatedRows.splice(index, 1);
+              setTimeout(() => {
+                setUserData(updatedRows);
+                resolve();
+              }, 1000);
+            }),
+        }}
+        actions={[
+          {
+            icon: "delete",
+            tooltip: "Delete Selected",
+            onClick: () => {
+              this.handleBulkDelete();
+            },
+          },
+        ]}
+        // Table Options And Styling
+        options={{
+          headerStyle: {
+            whiteSpace: "nowrap",
+            // color: "white",
+            // backgroundColor: "#992764",
+          },
+          rowStyle: {
+            fontSize: "13px",
+          },
+          tableLayout: "auto",
+          selection: true,
+          exportButton: true,
+          exportAllData: true,
+          addRowPosition: "first",
+          // paging: false,
+        }}
+        // Add icon with functionality at top when user select multiple rows
+      />
+    </div>
+  );
 };
 
 const mapStateToProps = (state, ownProps) => {
-    return {
-        users: state.user,
-    };
+  return {
+    users: state.user,
+  };
 };
 const mapDispatchToProps = (dispatch) => {
-    return {
-        listUsers: () => dispatch(listUsers()),
-    };
+  return {
+    listUsers: () => dispatch(listUsers()),
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Users));
