@@ -6,7 +6,6 @@ import { listProducts } from "src/store/actions/ProductActions";
 import { listCategories } from "src/store/actions/CategoryActions";
 import axios from "axios";
 import Product from "src/apis/Product";
-import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
 
 const Products = (props) => {
     const [productData, setProductData] = useState([]);
@@ -15,6 +14,20 @@ const Products = (props) => {
     const [categoryChange, setCategoryChange] = useState({ title: "" });
     const [selectedRows, setSelectedRows] = useState([]);
     const [allData, setAllData] = useState([]);
+    const renderCategories = () => {
+        console.log(categories);
+        return (
+            categories.length > 0 &&
+            categories.map((item, index) => {
+                return (
+                    <>
+                        <option>tshirt</option>
+                        <option>shirt</option>
+                    </>
+                );
+            })
+        );
+    };
     const [columns, setColumns] = useState([
         {
             title: " Title",
@@ -25,11 +38,9 @@ const Products = (props) => {
             field: "category",
             editable: "onAdd",
             render: (rowData) => rowData.category_id.title,
-            editComponent: (props) => {
+            editComponent: (row) => {
+                console.log(row);
                 return (
-                    // <select name="categories" id="categories" onChange={handleCategoryChange}>
-                    //     <option>Choose Category:</option>
-                    //     {renderCategories()}
                     <select name="categories" id="categories">
                         <option>Choose Category:</option>
                         {renderCategories()}
@@ -73,19 +84,6 @@ const Products = (props) => {
         getCategories();
     }, []);
 
-    const renderCategories = () => {
-        if (categories.length > 0) {
-            return (
-                <>
-                    {categories.map((item, index) => (
-                        <option key={index} value={item._id}>
-                            {item.title}
-                        </option>
-                    ))}
-                </>
-            );
-        }
-    };
     // console.log(categories);
 
     const getCategories = () => {
@@ -98,7 +96,6 @@ const Products = (props) => {
                 console.log(err);
             });
     };
-
     const getProductData = () => {
         axios
             .get("product")
