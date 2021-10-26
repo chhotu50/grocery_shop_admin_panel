@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import FormValidation from "src/helper/FormValidation";
+import Auth from "./../../../apis/Auth";
 import {
     CButton,
     CCard,
@@ -22,16 +24,19 @@ const Login = (props) => {
         email: "",
         password: "",
     });
-
+    const [error, setError] = useState({});
     const handleInputChange = (e) => {
         setUser({ ...user, [e.target.name]: e.target.value });
+        setError({
+            ...error,
+            [e.target.name]: FormValidation.loginForm(e.target.name, e.target.value),
+        });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (user.email !== "" && user.password !== "") {
             axios.post("login", user).then((res) => {
-                console.log(res);
                 localStorage.setItem("user.token", res.data.token);
                 localStorage.setItem("user.role", res.data.user.role);
                 props.history.push("/");
@@ -64,6 +69,7 @@ const Login = (props) => {
                                                 name="email"
                                             />
                                         </CInputGroup>
+                                        {error.email && <div>{error.email}</div>}
                                         <CInputGroup className="mb-4">
                                             <CInputGroupPrepend>
                                                 <CInputGroupText>
