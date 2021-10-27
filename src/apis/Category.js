@@ -7,7 +7,7 @@ const Category = {
     add: (payload) => {
         let data = Category.toFormData(payload);
         return axios.post("categories", data, {
-            headers: { Authorization: localStorage.getItem("user.token") },
+            headers: { token: localStorage.getItem("user.token") },
         });
     },
     showOne: (id) => {

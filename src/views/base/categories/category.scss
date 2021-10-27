@@ -1,0 +1,30 @@
+.category-img {
+    height: 80px;
+    width: 80px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.status-active {
+    background: green;
+    padding: 5px 18px;
+    color: #ffffff;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.status-deactivate {
+    background: blue;
+    padding: 5px 18px;
+    color: #ffffff;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.status-delete {
+    background: red;
+    padding: 5px 18px;
+    color: #ffffff;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}

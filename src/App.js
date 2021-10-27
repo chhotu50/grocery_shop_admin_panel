@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import axios from "axios";
 import { helper } from "./helper";
 import "./scss/style.scss";
+import "react-toastify/dist/ReactToastify.css";
 
 const loading = (
     <div className="pt-3 text-center">

@@ -17,6 +17,7 @@ const YESNO = {
 
 export const helper = {
     BASEURL: "http://localhost:4000/",
+    IMAGE_BASEURL: "http://localhost:4000",
     ROLE,
     STATUS,
     YESNO,
