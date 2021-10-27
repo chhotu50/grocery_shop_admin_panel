@@ -6,6 +6,7 @@ import { listProducts } from "src/store/actions/ProductActions";
 import { listCategories } from "src/store/actions/CategoryActions";
 import axios from "axios";
 import Product from "src/apis/Product";
+import DropDown from "./CategoryDropdown";
 
 const Products = (props) => {
     const [productData, setProductData] = useState([]);
@@ -13,53 +14,31 @@ const Products = (props) => {
     const [categories, setCategories] = useState([]);
     const [categoryChange, setCategoryChange] = useState({ title: "" });
     const [selectedRows, setSelectedRows] = useState([]);
-    const [allData, setAllData] = useState([]);
-    const renderCategories = () => {
-        console.log(categories);
-        return (
-            categories.length > 0 &&
-            categories.map((item, index) => {
-                return (
-                    <>
-                        <option>tshirt</option>
-                        <option>shirt</option>
-                    </>
-                );
-            })
-        );
-    };
     const [columns, setColumns] = useState([
         {
             title: " Title",
             field: "title",
+            validate: (rowData) => Boolean(rowData.title),
         },
         {
             title: "Category",
             field: "category",
-            editable: "onAdd",
             render: (rowData) => rowData.category_id.title,
-            editComponent: (row) => {
-                console.log(row);
-                return (
-                    <select name="categories" id="categories">
-                        <option>Choose Category:</option>
-                        {renderCategories()}
-                    </select>
-                );
-            },
+            editComponent: (props) => <DropDown onChange={handleCategoryChange} />,
         },
 
         {
             title: "Offer Price",
             field: "offer_price",
+            type: "numeric",
+            align: "left",
+            validate: (rowData) => Boolean(rowData.created_at),
         },
         {
             title: "Photo",
             field: "photo",
-            editable: "onAdd",
             editComponent: (props) => {
-                // console.log(props);
-                return <input type="file" name="img" accept="image/*" onChange={handleImg} />;
+                return <input type="file" name="photo" accept="image/*" onChange={handleImg} />;
             },
             render: (item) => (
                 <img src={item.photo[0]} alt="" border="1" height="100" width="100" />
@@ -68,29 +47,26 @@ const Products = (props) => {
         {
             title: "Created At",
             field: "created_at",
+            validate: (rowData) => Boolean(rowData.created_at),
             type: "date",
             dateSetting: {
                 format: "dd/MM/yyyy",
             },
         },
-        {
-            title: "Address",
-            field: "address",
-        },
     ]);
-
+    // -------------------------------------------------------------------------------------
     useEffect(() => {
         getProductData();
         getCategories();
     }, []);
 
-    // console.log(categories);
-
     const getCategories = () => {
         axios
             .get("categories")
             .then((res) => {
-                setCategories([...res.data.data]);
+                if (res.data.status === true) {
+                    setCategories(res.data.data);
+                }
             })
             .catch((err) => {
                 console.log(err);
@@ -107,18 +83,13 @@ const Products = (props) => {
             });
     };
 
-    const handleCategoryChange = (e) => {
-        setCategoryChange({ title: e.target.value });
-        console.log(categoryChange);
-    };
     // ----------------------------------------------------------------------------------
     const handleImg = (e) => {
         setProductImg(e.target.files[0]);
     };
 
-    const handleBulkDelete = () => {
-        const updatedData = productData.filter((row) => !selectedRows.includes(row));
-        setProductData(updatedData);
+    const handleCategoryChange = (e) => {
+        setCategoryChange({ _id: e.target.value });
     };
 
     return (
@@ -134,23 +105,24 @@ const Products = (props) => {
                 editable={{
                     onRowAdd: (newRow) =>
                         new Promise((resolve, reject) => {
-                            const updatedRow = [
-                                ...productData,
-                                {
-                                    ...newRow,
-                                    photo: [...productImg],
-                                    category_id: "61710ea7a2741bbb4faa1a33",
-                                },
-                            ];
+                            const data = {
+                                ...newRow,
+                                photo: productImg,
+                                category_id: categoryChange._id,
+                            };
+                            console.log(data, "=========");
+
+                            const updatedRow = [...productData, data];
                             setTimeout(() => {
-                                Product.add({
-                                    ...newRow,
-                                    photo: [...productImg],
-                                    category_id: "61710ea7a2741bbb4faa1a33",
+                                Product.add(data).then((res) => {
+                                    console.log(res);
+                                    if (res.data.status === true) {
+                                        setProductData(updatedRow);
+                                    }
                                 });
-                                setProductData(updatedRow);
+
                                 resolve();
-                            }, 1000);
+                            }, 2000);
                         }),
 
                     onRowDelete: (selectedRow) =>
@@ -168,21 +140,9 @@ const Products = (props) => {
                             }, 1000);
                         }),
                 }}
-                actions={[
-                    {
-                        icon: "delete",
-                        tooltip: "Delete Selected",
-                        onClick: () => {
-                            handleBulkDelete();
-                        },
-                    },
-                ]}
-                // Table Options And Styling
                 options={{
                     headerStyle: {
                         whiteSpace: "nowrap",
-                        // color: "white",
-                        // backgroundColor: "#992764",
                     },
                     rowStyle: {
                         fontSize: "13px",

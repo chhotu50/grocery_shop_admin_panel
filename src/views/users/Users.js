@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import MaterialTable from "material-table";
 
-import User from "./../../apis/User";
 import { listUsers } from "src/store/actions/UserActions";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
@@ -18,7 +17,6 @@ const Users = (props) => {
     },
   ]);
   const [selectedRows, setSelectedRows] = useState([]);
-  const [allData, setAllData] = useState([]);
   const [columns, setColumns] = useState([
     {
       title: " Name",
@@ -26,7 +24,6 @@ const Users = (props) => {
       validate: (rowData) => Boolean(rowData.name),
     },
     { title: "Email", field: "email", validate: (rowData) => Boolean(rowData.email) },
-
     {
       title: "Phone",
       field: "phone",
@@ -36,23 +33,12 @@ const Users = (props) => {
     { title: "Address", field: "address" },
   ]);
 
-  useEffect(() => {
-    props.listUsers();
-  }, []);
-
   const handleRowAdd = (newData, resolve) => {
     console.log("add row");
   };
 
-  // Update a single row
-
   const handleRowUpdate = (newData, oldData, resolve) => {
     console.log("update row");
-  };
-
-  const handleBulkDelete = () => {
-    const updatedData = userData.filter((row) => !selectedRows.includes(row));
-    setUserData(updatedData);
   };
 
   return (
@@ -97,12 +83,9 @@ const Users = (props) => {
             },
           },
         ]}
-        // Table Options And Styling
         options={{
           headerStyle: {
             whiteSpace: "nowrap",
-            // color: "white",
-            // backgroundColor: "#992764",
           },
           rowStyle: {
             fontSize: "13px",
@@ -112,9 +95,7 @@ const Users = (props) => {
           exportButton: true,
           exportAllData: true,
           addRowPosition: "first",
-          // paging: false,
         }}
-        // Add icon with functionality at top when user select multiple rows
       />
     </div>
   );

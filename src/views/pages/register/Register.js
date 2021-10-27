@@ -6,7 +6,6 @@ import {
   CButton,
   CCard,
   CCardBody,
-  CCardFooter,
   CCol,
   CContainer,
   CForm,
@@ -19,6 +18,7 @@ import {
 import CIcon from "@coreui/icons-react";
 import FormValidation from "src/helper/FormValidation";
 import axios from "axios";
+
 const Register = (props) => {
   const [data, setData] = useState({
     name: "",

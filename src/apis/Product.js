@@ -6,13 +6,9 @@ const Product = {
     },
     add: (payload) => {
         let data = Product.toFormData(payload);
-        return axios
-            .post("product", data, {
-                headers: { token: localStorage.getItem("user.token") },
-            })
-            .then((res) => {
-                console.log(res);
-            });
+        return axios.post("product", data, {
+            headers: { token: localStorage.getItem("user.token") },
+        });
     },
     remove: (id) => {
         return axios.delete("product/" + id, {
