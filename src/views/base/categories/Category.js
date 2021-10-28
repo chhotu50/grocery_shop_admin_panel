@@ -75,13 +75,8 @@ const Categories = (props) => {
                 }
             })
             .catch((err) => {
-                console.log(err);
+                toast.error(err.message, { position: "top-center" });
             });
-    };
-
-    const handleBulkDelete = (data) => {
-        const updatedData = categoryData.filter((row) => !selectedRows.includes(row));
-        setCategoryData(updatedData);
     };
 
     const handleImg = (e) => {
@@ -105,7 +100,6 @@ const Categories = (props) => {
                                 ...newRow,
                                 photo: categoryImg,
                             };
-                            console.log(data, "=====");
 
                             const updatedRow = [...categoryData, data];
                             setTimeout(() => {
@@ -115,31 +109,32 @@ const Categories = (props) => {
                                             toast.success(res.data.message, {
                                                 position: "top-center",
                                             });
-                                            if (res.data.status === true) {
-                                                setCategoryData(updatedRow);
-                                            }
-                                        } else {
-                                            console.log(res);
+                                            setCategoryData(updatedRow);
+                                            getCategories();
                                         }
                                     })
-                                    .catch((err) => console.log(err.message));
+                                    .catch((err) =>
+                                        toast.error(err.message, { position: "top-center" })
+                                    );
 
                                 resolve();
                             }, 2000);
                         }),
 
-                    onRowDelete: (selectedRow) => new Promise((resolve, reject) => {}),
+                    onRowDelete: (selectedRow) =>
+                        new Promise((resolve, reject) => {
+                            const index = selectedRow.tableData.id;
+                            const updatedRows = [...categoryData];
+                            updatedRows.splice(index, 1);
+                            setTimeout(() => {
+                                Category.remove(selectedRow._id).then(() => {
+                                    toast.success("Removed", { position: "top-center" });
+                                    setCategoryData(updatedRows);
+                                });
+                                resolve();
+                            }, 1000);
+                        }),
                 }}
-                actions={[
-                    {
-                        icon: "delete",
-                        tooltip: "Delete Selected",
-                        onClick: (event, rowdata) => {
-                            console.log(rowdata);
-                            handleBulkDelete();
-                        },
-                    },
-                ]}
                 options={{
                     headerStyle: {
                         fontSize: "1.2rem",
@@ -155,6 +150,7 @@ const Categories = (props) => {
                     exportButton: true,
                     exportAllData: true,
                     addRowPosition: "first",
+                    columnsButton: true,
                 }}
             />
         </div>

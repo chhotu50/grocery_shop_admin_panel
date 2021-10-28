@@ -10,18 +10,9 @@ const Category = {
             headers: { token: localStorage.getItem("user.token") },
         });
     },
-    showOne: (id) => {
-        return axios.get("categories/" + id);
-    },
-    edit: (payload, id) => {
-        let data = Category.toFormData(payload);
-        return axios.post("/updateData/", data, {
-            headers: { Authorization: localStorage.getItem("user.token") },
-        });
-    },
     remove: (id) => {
         return axios.delete("categories/" + id, {
-            headers: { Authorization: localStorage.getItem("user.token") },
+            headers: { token: localStorage.getItem("user.token") },
         });
     },
 

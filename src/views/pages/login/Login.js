@@ -18,8 +18,6 @@ import {
 import CIcon from "@coreui/icons-react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
 const Login = (props) => {
     const [user, setUser] = useState({
         email: "",
@@ -49,6 +47,10 @@ const Login = (props) => {
                         position: toast.POSITION.TOP_CENTER,
                     });
                 }
+            });
+        } else {
+            toast.error("Field is required", {
+                position: toast.POSITION.TOP_CENTER,
             });
         }
     };

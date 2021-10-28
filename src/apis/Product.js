@@ -15,6 +15,11 @@ const Product = {
             headers: { token: localStorage.getItem("user.token") },
         });
     },
+    removeMultiple: (data) => {
+        return axios.post("product/multiple-delete", data, {
+            headers: { token: localStorage.getItem("user.token") },
+        });
+    },
     showOne: (id) => {
         return axios.get("products/" + id);
     },

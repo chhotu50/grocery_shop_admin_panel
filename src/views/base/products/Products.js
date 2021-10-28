@@ -28,7 +28,13 @@ const Products = (props) => {
             render: (rowData) => (rowData.category_id ? rowData.category_id.title : ""),
             editComponent: (props) => <DropDown onChange={handleCategoryChange} />,
         },
-        { title: "Price", field: "price", validate: (rowData) => Boolean(rowData.title) },
+        {
+            title: "Price",
+            field: "price",
+            type: "numeric",
+            validate: (rowData) => Boolean(rowData.title),
+        },
+
         {
             title: "Offer Price",
             field: "offer_price",
@@ -64,8 +70,8 @@ const Products = (props) => {
                     return <span className="status-active">Active</span>;
                 } else if (item.status === helper.STATUS.DEACTIVE) {
                     return <span className="status-deactive">Deactive</span>;
-                } else {
-                    return <span className="status-deleted">Deleted</span>;
+                } else if (item.status === helper.STATUS.DELETED) {
+                    return <span className="status-delete">Deleted</span>;
                 }
             },
         },
@@ -84,6 +90,10 @@ const Products = (props) => {
     useEffect(() => {
         getProductData();
         getCategories();
+        return () => {
+            setProductData([]);
+            setCategories([]); // This worked for me
+        };
     }, []);
 
     const getCategories = () => {
@@ -95,7 +105,7 @@ const Products = (props) => {
                 }
             })
             .catch((err) => {
-                console.log(err);
+                toast.error(err.message, { position: "top-center" });
             });
     };
 
@@ -106,10 +116,9 @@ const Products = (props) => {
                 setProductData([...res.data.data]);
             })
             .catch((err) => {
-                console.log(err);
+                toast.error(err.message, { position: "top-center" });
             });
     };
-    console.log(productData);
     // ----------------------------------------------------------------------------------
     const handleImg = (e) => {
         setProductImg(e.target.files[0]);
@@ -117,6 +126,17 @@ const Products = (props) => {
 
     const handleCategoryChange = (e) => {
         setCategoryChange({ _id: e.target.value });
+    };
+
+    const handleBulkDelete = () => {
+        const updatedData = productData.filter((row) => !selectedRows.includes(row));
+        setProductData(updatedData);
+        let data = [];
+        const selectedData = selectedRows.map((row) => data.push(row._id));
+
+        Product.removeMultiple({ ids: data.toString() }).then((res) => {
+            toast.success(res.data.message, { position: "top-center" });
+        });
     };
 
     var sumOfferPrice = productData.reduce(function (tot, arr) {
@@ -141,11 +161,11 @@ const Products = (props) => {
                                 <Grid item sm={3} align="right">
                                     Total:
                                 </Grid>
-                                <Grid item sm={2} align="center">
-                                    {sumPrice.toFixed(2)}
+                                <Grid item sm={2} align="right">
+                                    <span className="total">{sumPrice.toFixed(2)}</span>
                                 </Grid>
-                                <Grid item sm={2} align="left">
-                                    {sumOfferPrice.toFixed(2)}
+                                <Grid item sm={1} align="right">
+                                    <span className="total">{sumOfferPrice.toFixed(2)}</span>
                                 </Grid>
                             </Grid>
                             <Divider />
@@ -164,16 +184,22 @@ const Products = (props) => {
                                 photo: productImg,
                                 category_id: categoryChange._id,
                             };
-                            // console.log(data, "=====");
 
                             const updatedRow = [...productData, data];
                             setTimeout(() => {
-                                Product.add(data).then((res) => {
-                                    toast.success(res.data.message, { position: "top-center" });
-                                    if (res.data.status === true) {
-                                        setProductData(updatedRow);
-                                    }
-                                });
+                                Product.add(data)
+                                    .then((res) => {
+                                        if (res.data.status === true) {
+                                            toast.success(res.data.message, {
+                                                position: "top-center",
+                                            });
+                                            setProductData(updatedRow);
+                                            getProductData();
+                                        }
+                                    })
+                                    .catch((err) => {
+                                        toast.error(err.message, { position: "top-center" });
+                                    });
 
                                 resolve();
                             }, 2000);
@@ -185,13 +211,28 @@ const Products = (props) => {
                             const updatedRows = [...productData];
                             updatedRows.splice(index, 1);
                             setTimeout(() => {
-                                Product.remove(selectedRow._id).then(() => {
-                                    console.log("Removed");
-                                });
-                                setProductData(updatedRows);
-                                resolve();
+                                Product.remove(selectedRow._id)
+                                    .then((res) => {
+                                        if (res.data.status === true)
+                                            toast.success("Removed", { position: "top-center" });
+                                        setProductData(updatedRows);
+                                    })
+                                    .catch((err) => {
+                                        toast.error(err.message, { position: "top-center" });
+                                    })
+                                    .resolve();
                             }, 1000);
                         }),
+                    //     onRowUpdate: (updatedRow, oldRow) =>
+                    //         new Promise((resolve, reject) => {
+                    //             const index = oldRow.tableData.id;
+                    //             const updatedRows = [...productData];
+                    //             updatedRows[index] = updatedRow;
+                    //             setTimeout(() => {
+                    //                 setProductData(updatedRows);
+                    //                 resolve();
+                    //             }, 1000);
+                    //         }),
                 }}
                 options={{
                     headerStyle: {
@@ -208,7 +249,17 @@ const Products = (props) => {
                     exportButton: true,
                     exportAllData: true,
                     addRowPosition: "first",
+                    columnsButton: true,
                 }}
+                actions={[
+                    {
+                        icon: "delete",
+                        tooltip: "Delete Selected",
+                        onClick: (props) => {
+                            handleBulkDelete();
+                        },
+                    },
+                ]}
             />
         </div>
     );
