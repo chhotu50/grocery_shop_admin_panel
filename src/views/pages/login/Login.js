@@ -17,6 +17,7 @@ import {
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import axios from "axios";
+import { Redirect } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 const Login = (props) => {
     const [user, setUser] = useState({
@@ -54,7 +55,9 @@ const Login = (props) => {
             });
         }
     };
-
+    if (localStorage.getItem("user.token")) {
+        return <Redirect to="/" />;
+    }
     return (
         <div className="c-app c-default-layout flex-row align-items-center">
             <CContainer>
