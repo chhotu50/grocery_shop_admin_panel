@@ -17,7 +17,7 @@ import {
 import CIcon from "@coreui/icons-react";
 import FormValidation from "src/helper/FormValidation";
 import axios from "axios";
-
+import { Redirect } from "react-router-dom";
 const Register = (props) => {
   const [data, setData] = useState({
     name: "",
@@ -68,7 +68,9 @@ const Register = (props) => {
       }
     }
   };
-
+  if (localStorage.getItem("user.token")) {
+    return <Redirect to="/" />;
+  }
   return (
     <div className="c-app c-default-layout flex-row align-items-center">
       <CContainer>
@@ -171,7 +173,7 @@ const Register = (props) => {
                           onChange={handleInputChange}
                         />
                       </CInputGroup>
-                      {!error ? <div className="validation">not matching</div> : ""}
+                      {!error ? <div className="validation">Password does not match</div> : ""}
                     </CCol>
                   </CRow>
                   <CButton color="success" block type="submit">

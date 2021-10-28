@@ -14,7 +14,12 @@ const _nav = [
         to: "/products",
         icon: "cil-chart-pie",
     },
-
+    {
+        _tag: "CSidebarNavItem",
+        name: "Categories",
+        to: "/categories",
+        icon: "cilLayers",
+    },
     {
         _tag: "CSidebarNavDropdown",
         name: "Notifications",
