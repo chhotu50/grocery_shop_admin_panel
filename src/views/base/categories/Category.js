@@ -8,7 +8,6 @@ import { CSpinner } from "@coreui/react";
 import User from "src/apis/User";
 
 const Categories = (props) => {
-    const [user, setUser] = useState();
     const [toggle, setToggle] = useState(false);
     const [categoryData, setCategoryData] = useState([]);
     const [categoryImg, setCategoryImg] = useState([]);
@@ -60,21 +59,16 @@ const Categories = (props) => {
             title: "Created By",
             align: "center",
             render: (item) => {
-                return item.created_by ? item.created_by.name : user.name;
+                return item.created_by
+                    ? item.created_by.name
+                    : localStorage.getItem("user.data").name;
             },
         },
     ]);
 
     useEffect(() => {
         getCategories();
-        getCurrentUser();
     }, []);
-
-    const getCurrentUser = () => {
-        User.showOne().then((res) => {
-            setUser(res.data);
-        });
-    };
 
     const getCategories = () => {
         Category.list()

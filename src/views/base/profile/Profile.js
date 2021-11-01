@@ -2,25 +2,45 @@ import React, { useState, useEffect } from "react";
 import "./Profile.scss";
 import { helper } from "src/helper";
 import User from "src/apis/User";
+import { Button, TextField } from "@material-ui/core";
+import { toast, ToastContainer } from "react-toastify";
 
 const Profile = () => {
-    const [photo, setPhoto] = useState("");
-    const [user, setUser] = useState();
-
+    const [toggle, setToggle] = useState(true);
+    const [user, setUser] = useState({});
+    const data = JSON.parse(localStorage.getItem("user.data"));
     useEffect(() => {
-        User.showOne().then((res) => {
-            console.log(res.data);
-        });
+        currentUserData();
     }, []);
+
+    const currentUserData = () => {
+        User.showOne(data._id).then((res) => {
+            setUser(res.data.data);
+        });
+    };
+
     const handleImgChange = (e) => {
         const data = { photo: e.target.files[0] };
         User.profilePhoto(data).then((res) => {
-            setPhoto(res.data.data.photo);
-            localStorage.setItem("user.photo", res.data.data.photo);
+            setUser({ ...user, photo: res.data.data.photo });
+            toast.success("Success!", { position: "top-center" });
         });
+    };
+
+    const handleInputChange = (e) => {
+        setUser({ ...user, [e.target.name]: e.target.value });
+    };
+    //-----------------------------------submit details remaining
+    const handleSubmit = (e) => {
+        e.preventDefault();
+    };
+
+    const handleToggle = () => {
+        setToggle(!toggle);
     };
     return (
         <>
+            <ToastContainer />
             <div className="container">
                 <div className="main-body">
                     <div className="row gutters-sm">
@@ -32,11 +52,7 @@ const Profile = () => {
                                             <label htmlFor="img-input">
                                                 <img
                                                     alt="avatar"
-                                                    src={
-                                                        localStorage.getItem("user.photo")
-                                                            ? helper.IMAGE_BASEURL + photo
-                                                            : helper.IMAGE_BASEURL + user.photo
-                                                    }
+                                                    src={helper.IMAGE_BASEURL + user.photo}
                                                     width="100px"
                                                     height="100px"
                                                     style={{ borderRadius: "50%" }}
@@ -52,9 +68,9 @@ const Profile = () => {
                                             />
                                         </div>
                                         <div className="mt-3">
-                                            <h4>{user.name}</h4>
+                                            <h4>{data.name}</h4>
                                             <p className="text-secondary mb-1">
-                                                {user.role === 1 ? "Admin" : "User"}
+                                                {data.role === 1 ? "Admin" : "User"}
                                             </p>
                                             <p className="text-muted font-size-sm">
                                                 Bay Area, San Francisco, CA
@@ -182,45 +198,154 @@ const Profile = () => {
                             </div>
                         </div>
                         <div className="col-md-8">
-                            <div className="card mb-3">
-                                <div className="card-body">
-                                    <div className="row">
-                                        <div className="col-sm-3">
-                                            <h6 className="mb-0">Full Name</h6>
+                            {toggle ? (
+                                <div className="card mb-3">
+                                    <div className="card-body">
+                                        <div className="row">
+                                            <div className="col-sm-3">
+                                                <h6 className="mb-0">Full Name</h6>
+                                            </div>
+                                            <div className="col-sm-9 text-secondary">
+                                                {data.name}
+                                            </div>
                                         </div>
-                                        <div className="col-sm-9 text-secondary">{user.name}</div>
-                                    </div>
-                                    <hr />
-                                    <div className="row">
-                                        <div className="col-sm-3">
-                                            <h6 className="mb-0">Email</h6>
+                                        <hr />
+                                        <div className="row">
+                                            <div className="col-sm-3">
+                                                <h6 className="mb-0">Email</h6>
+                                            </div>
+                                            <div className="col-sm-9 text-secondary">
+                                                {data.email}
+                                            </div>
                                         </div>
-                                        <div className="col-sm-9 text-secondary">{user.email}</div>
-                                    </div>
-                                    <hr />
-                                    <div className="row">
-                                        <div className="col-sm-3">
-                                            <h6 className="mb-0">Phone</h6>
+                                        <hr />
+                                        <div className="row">
+                                            <div className="col-sm-3">
+                                                <h6 className="mb-0">Phone</h6>
+                                            </div>
+                                            <div className="col-sm-9 text-secondary">
+                                                {data.phone}
+                                            </div>
                                         </div>
-                                        <div className="col-sm-9 text-secondary">{user.phone}</div>
-                                    </div>
-                                    <hr />
-                                    <div className="row">
-                                        <div className="col-sm-3">
-                                            <h6 className="mb-0">Address</h6>
+                                        <hr />
+                                        <div className="row">
+                                            <div className="col-sm-3">
+                                                <h6 className="mb-0">Address</h6>
+                                            </div>
+                                            <div className="col-sm-9 text-secondary">
+                                                {data.address}
+                                            </div>
                                         </div>
-                                        <div className="col-sm-9 text-secondary">
-                                            {user.address}
-                                        </div>
-                                    </div>
-                                    <hr />
-                                    <div className="row">
-                                        <div className="col-sm-12">
-                                            <p className="btn btn-info ">Edit</p>
+                                        <hr />
+                                        <div className="row">
+                                            <div className="col-sm-10">
+                                                <Button
+                                                    variant="outlined"
+                                                    onClick={handleToggle}
+                                                    style={{ fontWeight: 800 }}
+                                                >
+                                                    Edit
+                                                </Button>
+                                            </div>
+                                            <div className="col-sm-2">
+                                                <Button
+                                                    onClick={handleSubmit}
+                                                    style={{ fontWeight: 800 }}
+                                                >
+                                                    Submit
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="card mb-3">
+                                    <div className="card-body">
+                                        <div className="row">
+                                            <div className="col-sm-3">Name:</div>
+                                            <div className="col-sm-9 text-secondary">
+                                                <TextField
+                                                    className="profile-input"
+                                                    type="text"
+                                                    name="name"
+                                                    fullWidth
+                                                    value={user.name}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div className="row">
+                                            <div className="col-sm-3">
+                                                <h6 className="mb-0">Email</h6>
+                                            </div>
+                                            <div className="col-sm-9 text-secondary">
+                                                <TextField
+                                                    className="profile-input"
+                                                    type="email"
+                                                    name="email"
+                                                    fullWidth
+                                                    onChange={handleInputChange}
+                                                    value={user.email}
+                                                />
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div className="row">
+                                            <div className="col-sm-3">
+                                                <h6 className="mb-0">Phone</h6>
+                                            </div>
+                                            <div className="col-sm-9 text-secondary">
+                                                <TextField
+                                                    className="profile-input"
+                                                    type="number"
+                                                    name="phone"
+                                                    fullWidth
+                                                    onChange={handleInputChange}
+                                                    value={user.phone}
+                                                />
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div className="row">
+                                            <div className="col-sm-3">
+                                                <h6 className="mb-0">Address</h6>
+                                            </div>
+                                            <div className="col-sm-9 text-secondary">
+                                                <TextField
+                                                    className="profile-input"
+                                                    type="text"
+                                                    name="address"
+                                                    fullWidth
+                                                    onChange={handleInputChange}
+                                                    value={user.address}
+                                                />
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div className="row">
+                                            <div className="col-sm-10">
+                                                <Button
+                                                    variant="outlined"
+                                                    onClick={handleToggle}
+                                                    style={{ fontWeight: 800 }}
+                                                >
+                                                    Edit
+                                                </Button>
+                                            </div>
+                                            <div className="col-sm-2">
+                                                <Button
+                                                    variant="outlined"
+                                                    onClick={handleSubmit}
+                                                    style={{ fontWeight: 800 }}
+                                                >
+                                                    Submit
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="row gutters-sm">
                                 <div className="col-sm-6 mb-3">

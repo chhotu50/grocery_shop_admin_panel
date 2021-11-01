@@ -12,7 +12,12 @@ const User = {
         });
     },
     showOne: (id) => {
-        return axios.get("user/" + localStorage.getItem("user.id"), {
+        return axios.get("user/" + id, {
+            headers: { token: localStorage.getItem("user.token") },
+        });
+    },
+    remove: (id) => {
+        return axios.delete("user/" + id, {
             headers: { token: localStorage.getItem("user.token") },
         });
     },

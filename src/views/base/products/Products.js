@@ -8,10 +8,8 @@ import "./products.scss";
 import { Divider, Grid, TablePagination } from "@material-ui/core";
 import { toast, ToastContainer } from "react-toastify";
 import { CSpinner } from "@coreui/react";
-import User from "src/apis/User";
 
 const Products = (props) => {
-    const [user, setUser] = useState();
     const [toggle, setToggle] = useState(false);
     const [productData, setProductData] = useState([]);
     const [productImg, setProductImg] = useState("");
@@ -61,7 +59,9 @@ const Products = (props) => {
             title: "Created By",
             align: "center",
             render: (item) => {
-                return item.created_by ? item.created_by.name : user.name;
+                return item.created_by
+                    ? item.created_by.name
+                    : localStorage.getItem("user.data").name;
             },
         },
         {
@@ -97,12 +97,6 @@ const Products = (props) => {
             setCategories([]); // This worked for me
         };
     }, []);
-
-    const getCurrentUser = () => {
-        User.showOne().then((res) => {
-            setUser(res.data);
-        });
-    };
 
     const getCategories = () => {
         axios
