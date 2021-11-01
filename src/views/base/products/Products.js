@@ -7,8 +7,10 @@ import { helper } from "./../../../helper/index";
 import "./products.scss";
 import { Divider, Grid, TablePagination } from "@material-ui/core";
 import { toast, ToastContainer } from "react-toastify";
+import { CSpinner } from "@coreui/react";
 
 const Products = (props) => {
+    const [toggle, setToggle] = useState(false);
     const [productData, setProductData] = useState([]);
     const [productImg, setProductImg] = useState("");
     const [categories, setCategories] = useState([]);
@@ -113,6 +115,7 @@ const Products = (props) => {
         axios
             .get("product")
             .then((res) => {
+                setToggle(true);
                 setProductData([...res.data.data]);
             })
             .catch((err) => {
@@ -146,123 +149,133 @@ const Products = (props) => {
     var sumPrice = productData.reduce(function (tot, arr) {
         return tot + parseInt(arr.price);
     }, 0);
-    return (
-        <div>
-            <ToastContainer />
-            <h1>Products Page</h1>
-            <MaterialTable
-                title=""
-                columns={columns}
-                data={productData}
-                components={{
-                    Pagination: (props) => (
-                        <div>
-                            <Grid container style={{ padding: "16px 0 ", fontWeight: "bolder" }}>
-                                <Grid item sm={3} align="right">
-                                    Total:
+    if (toggle) {
+        return (
+            <div>
+                <ToastContainer />
+                <h1>Products Page</h1>
+                <MaterialTable
+                    title=""
+                    columns={columns}
+                    data={productData}
+                    components={{
+                        Pagination: (props) => (
+                            <div>
+                                <Grid
+                                    container
+                                    style={{ padding: "16px 0 ", fontWeight: "bolder" }}
+                                >
+                                    <Grid item sm={3} align="right">
+                                        Total:
+                                    </Grid>
+                                    <Grid item sm={2} align="right">
+                                        <span className="total">{sumPrice.toFixed(2)}</span>
+                                    </Grid>
+                                    <Grid item sm={1} align="right">
+                                        <span className="total">{sumOfferPrice.toFixed(2)}</span>
+                                    </Grid>
                                 </Grid>
-                                <Grid item sm={2} align="right">
-                                    <span className="total">{sumPrice.toFixed(2)}</span>
-                                </Grid>
-                                <Grid item sm={1} align="right">
-                                    <span className="total">{sumOfferPrice.toFixed(2)}</span>
-                                </Grid>
-                            </Grid>
-                            <Divider />
-                            <TablePagination {...props} />
-                        </div>
-                    ),
-                }}
-                onSelectionChange={(rows) => {
-                    setSelectedRows(rows);
-                }}
-                editable={{
-                    onRowAdd: (newRow) =>
-                        new Promise((resolve, reject) => {
-                            const data = {
-                                ...newRow,
-                                photo: productImg,
-                                category_id: categoryChange._id,
-                            };
+                                <Divider />
+                                <TablePagination {...props} />
+                            </div>
+                        ),
+                    }}
+                    onSelectionChange={(rows) => {
+                        setSelectedRows(rows);
+                    }}
+                    editable={{
+                        onRowAdd: (newRow) =>
+                            new Promise((resolve, reject) => {
+                                const data = {
+                                    ...newRow,
+                                    photo: productImg,
+                                    category_id: categoryChange._id,
+                                };
 
-                            const updatedRow = [...productData, data];
-                            setTimeout(() => {
-                                Product.add(data)
-                                    .then((res) => {
-                                        if (res.data.status === true) {
-                                            toast.success(res.data.message, {
-                                                position: "top-center",
-                                            });
-                                            setProductData(updatedRow);
-                                            getProductData();
-                                        }
-                                    })
-                                    .catch((err) => {
-                                        toast.error(err.message, { position: "top-center" });
-                                    });
+                                const updatedRow = [...productData, data];
+                                setTimeout(() => {
+                                    Product.add(data)
+                                        .then((res) => {
+                                            if (res.data.status === true) {
+                                                toast.success(res.data.message, {
+                                                    position: "top-center",
+                                                });
+                                                setProductData(updatedRow);
+                                                getProductData();
+                                            }
+                                        })
+                                        .catch((err) => {
+                                            toast.error(err.message, { position: "top-center" });
+                                        });
 
-                                resolve();
-                            }, 2000);
-                        }),
+                                    resolve();
+                                }, 2000);
+                            }),
 
-                    onRowDelete: (selectedRow) =>
-                        new Promise((resolve, reject) => {
-                            const index = selectedRow.tableData.id;
-                            const updatedRows = [...productData];
-                            updatedRows.splice(index, 1);
-                            setTimeout(() => {
-                                Product.remove(selectedRow._id)
-                                    .then((res) => {
-                                        if (res.data.status === true)
-                                            toast.success("Removed", { position: "top-center" });
-                                        setProductData(updatedRows);
-                                    })
-                                    .catch((err) => {
-                                        toast.error(err.message, { position: "top-center" });
-                                    })
-                                    .resolve();
-                            }, 1000);
-                        }),
-                    //     onRowUpdate: (updatedRow, oldRow) =>
-                    //         new Promise((resolve, reject) => {
-                    //             const index = oldRow.tableData.id;
-                    //             const updatedRows = [...productData];
-                    //             updatedRows[index] = updatedRow;
-                    //             setTimeout(() => {
-                    //                 setProductData(updatedRows);
-                    //                 resolve();
-                    //             }, 1000);
-                    //         }),
-                }}
-                options={{
-                    headerStyle: {
-                        fontSize: "1.2rem",
-                        whiteSpace: "nowrap",
-                        fontFamily: "cursive",
-                        fontWeight: "bolder",
-                    },
-                    rowStyle: {
-                        fontSize: "13px",
-                    },
-                    tableLayout: "auto",
-                    selection: true,
-                    exportButton: true,
-                    exportAllData: true,
-                    addRowPosition: "first",
-                    columnsButton: true,
-                }}
-                actions={[
-                    {
-                        icon: "delete",
-                        tooltip: "Delete Selected",
-                        onClick: (props) => {
-                            handleBulkDelete();
+                        onRowDelete: (selectedRow) =>
+                            new Promise((resolve, reject) => {
+                                const index = selectedRow.tableData.id;
+                                const updatedRows = [...productData];
+                                updatedRows.splice(index, 1);
+                                setTimeout(() => {
+                                    Product.remove(selectedRow._id)
+                                        .then((res) => {
+                                            if (res.data.status === true) {
+                                                setProductData(updatedRows);
+                                                toast.success("Removed", {
+                                                    position: "top-center",
+                                                });
+                                            }
+                                        })
+                                        .catch((err) => {
+                                            toast.error(err.message, { position: "top-center" });
+                                        });
+                                    resolve();
+                                }, 1000);
+                            }),
+                        //     onRowUpdate: (updatedRow, oldRow) =>
+                        //         new Promise((resolve, reject) => {
+                        //             const index = oldRow.tableData.id;
+                        //             const updatedRows = [...productData];
+                        //             updatedRows[index] = updatedRow;
+                        //             setTimeout(() => {
+                        //                 setProductData(updatedRows);
+                        //                 resolve();
+                        //             }, 1000);
+                        //         }),
+                    }}
+                    options={{
+                        headerStyle: {
+                            fontSize: "1.2rem",
+                            whiteSpace: "nowrap",
+                            fontFamily: "cursive",
+                            fontWeight: "bolder",
                         },
-                    },
-                ]}
-            />
-        </div>
-    );
+                        rowStyle: {
+                            fontSize: "13px",
+                        },
+                        tableLayout: "auto",
+                        selection: true,
+                        exportButton: true,
+                        exportAllData: true,
+                        addRowPosition: "first",
+                        columnsButton: true,
+                    }}
+                    actions={[
+                        {
+                            icon: "delete",
+                            tooltip: "Delete Selected",
+                            onClick: (props) => {
+                                handleBulkDelete();
+                            },
+                        },
+                    ]}
+                />
+            </div>
+        );
+    } else if (!toggle) {
+        return <CSpinner variant="grow" className="spinner" />;
+    }
 };
 
 export default Products;

@@ -12,8 +12,6 @@ import {
     CLink,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-
-// routes config
 import routes from "../routes";
 
 import {
@@ -46,9 +44,6 @@ const TheHeader = () => {
             <CHeaderNav className="d-md-down-none mr-auto">
                 <CHeaderNavItem className="px-3">
                     <CHeaderNavLink to="/dashboard">Dashboard</CHeaderNavLink>
-                </CHeaderNavItem>
-                <CHeaderNavItem className="px-3">
-                    <CHeaderNavLink to="/users">Users</CHeaderNavLink>
                 </CHeaderNavItem>
                 <CHeaderNavItem className="px-3">
                     <CHeaderNavLink>Settings</CHeaderNavLink>

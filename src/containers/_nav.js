@@ -21,6 +21,12 @@ const _nav = [
         icon: "cilLayers",
     },
     {
+        _tag: "CSidebarNavItem",
+        name: "Users",
+        to: "/users",
+        icon: <CIcon name="cilUser" customClasses="c-sidebar-nav-icon" />,
+    },
+    {
         _tag: "CSidebarNavDropdown",
         name: "Notifications",
         route: "/notifications",

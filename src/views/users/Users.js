@@ -5,8 +5,10 @@ import MaterialTable from "material-table";
 import User from "src/apis/User";
 import { helper } from "src/helper";
 import { toast } from "react-toastify";
+import { CSpinner } from "@coreui/react";
 
 const Users = (props) => {
+    const [toggle, setToggle] = useState(false);
     const [userData, setUserData] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
     const [columns, setColumns] = useState([
@@ -19,7 +21,7 @@ const Users = (props) => {
             title: "Photo",
             field: "photo",
             render: (item) => (
-                <img src="/avatars/9.png" alt="" border="1" height="100" width="100" />
+                <img src="/avatars/avatar.jpeg" alt="" border="1" height="100" width="100" />
             ),
         },
         { title: "Email", field: "email", validate: (rowData) => Boolean(rowData.email) },
@@ -59,6 +61,7 @@ const Users = (props) => {
     const getUser = () => {
         User.list()
             .then((res) => {
+                setToggle(true);
                 setUserData(res.data.data);
             })
             .catch((err) => {
@@ -74,64 +77,68 @@ const Users = (props) => {
         console.log("update row");
     };
 
-    return (
-        <div>
-            <h2>User List</h2>
-            <MaterialTable
-                title=""
-                columns={columns}
-                data={userData}
-                onSelectionChange={(rows) => {
-                    setSelectedRows(rows);
-                }}
-                editable={{
-                    onRowAdd: (newData) =>
-                        new Promise((resolve) => {
-                            handleRowAdd(newData, resolve);
-                        }),
-                    onRowUpdate: (newData, oldData) =>
-                        new Promise((resolve) => {
-                            handleRowUpdate(newData, oldData, resolve);
-                        }),
-                    onRowDelete: (selectedRow) =>
-                        new Promise((resolve, reject) => {
-                            const index = selectedRow.tableData.id;
-                            const updatedRows = [...userData];
-                            updatedRows.splice(index, 1);
-                            setTimeout(() => {
-                                setUserData(updatedRows);
-                                resolve();
-                            }, 1000);
-                        }),
-                }}
-                // actions={[
-                //     {
-                //         icon: "delete",
-                //         tooltip: "Delete Selected",
-                //         onClick: () => {
-                //             handleBulkDelete();
-                //         },
-                //     },
-                // ]}
-                options={{
-                    headerStyle: {
-                        fontSize: "1.2rem",
-                        whiteSpace: "nowrap",
-                        fontFamily: "cursive",
-                        fontWeight: "bolder",
-                    },
-                    rowStyle: {
-                        fontSize: "13px",
-                    },
-                    tableLayout: "auto",
-                    selection: true,
-                    exportButton: true,
-                    exportAllData: true,
-                    addRowPosition: "first",
-                }}
-            />
-        </div>
-    );
+    if (toggle) {
+        return (
+            <div>
+                <h2>User List</h2>
+                <MaterialTable
+                    title=""
+                    columns={columns}
+                    data={userData}
+                    onSelectionChange={(rows) => {
+                        setSelectedRows(rows);
+                    }}
+                    editable={{
+                        onRowAdd: (newData) =>
+                            new Promise((resolve) => {
+                                handleRowAdd(newData, resolve);
+                            }),
+                        onRowUpdate: (newData, oldData) =>
+                            new Promise((resolve) => {
+                                handleRowUpdate(newData, oldData, resolve);
+                            }),
+                        onRowDelete: (selectedRow) =>
+                            new Promise((resolve, reject) => {
+                                const index = selectedRow.tableData.id;
+                                const updatedRows = [...userData];
+                                updatedRows.splice(index, 1);
+                                setTimeout(() => {
+                                    setUserData(updatedRows);
+                                    resolve();
+                                }, 1000);
+                            }),
+                    }}
+                    // actions={[
+                    //     {
+                    //         icon: "delete",
+                    //         tooltip: "Delete Selected",
+                    //         onClick: () => {
+                    //             handleBulkDelete();
+                    //         },
+                    //     },
+                    // ]}
+                    options={{
+                        headerStyle: {
+                            fontSize: "1.2rem",
+                            whiteSpace: "nowrap",
+                            fontFamily: "cursive",
+                            fontWeight: "bolder",
+                        },
+                        rowStyle: {
+                            fontSize: "13px",
+                        },
+                        tableLayout: "auto",
+                        selection: true,
+                        exportButton: true,
+                        exportAllData: true,
+                        addRowPosition: "first",
+                    }}
+                />
+            </div>
+        );
+    } else if (!toggle) {
+        return <CSpinner variant="grow" className="spinner" />;
+    }
 };
 
 export default Users;
