@@ -80,7 +80,6 @@ const Users = (props) => {
     if (toggle) {
         return (
             <div>
-                <h2>User List</h2>
                 <MaterialTable
                     title=""
                     columns={columns}
@@ -123,6 +122,8 @@ const Users = (props) => {
                             whiteSpace: "nowrap",
                             fontFamily: "cursive",
                             fontWeight: "bolder",
+                            color: "white",
+                            backgroundColor: "#3C4B64",
                         },
                         rowStyle: {
                             fontSize: "13px",
