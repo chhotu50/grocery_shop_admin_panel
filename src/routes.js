@@ -5,6 +5,7 @@ const Categories = React.lazy(() => import("./views/base/categories/Category"));
 const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"));
 const Users = React.lazy(() => import("./views/users/Users"));
 const User = React.lazy(() => import("./views/users/User"));
+const Profile = React.lazy(() => import("./views/base/profile/Profile"));
 
 const routes = [
     { path: "/", exact: true, name: "Home" },
@@ -13,6 +14,7 @@ const routes = [
     { path: "/categories", name: "Categories", component: Categories },
     { path: "/users", exact: true, name: "Users", component: Users },
     { path: "/users/:id", exact: true, name: "User Details", component: User },
+    { path: "/profile", exact: true, name: "Profile", component: Profile },
 ];
 
 export default routes;

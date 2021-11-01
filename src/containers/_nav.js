@@ -54,32 +54,12 @@ const _nav = [
             },
         ],
     },
-    {
-        _tag: "CSidebarNavDivider",
-    },
 
     {
-        _tag: "CSidebarNavDropdown",
-        name: "Pages",
-        route: "/pages",
-        icon: "cil-star",
-        _children: [
-            {
-                _tag: "CSidebarNavItem",
-                name: "Login",
-                to: "/login",
-            },
-            {
-                _tag: "CSidebarNavItem",
-                name: "Register",
-                to: "/register",
-            },
-        ],
-    },
-
-    {
-        _tag: "CSidebarNavDivider",
-        className: "m-2",
+        _tag: "CSidebarNavItem",
+        name: "Profile",
+        to: "/profile",
+        icon: <CIcon name="cil-settings" customClasses="c-sidebar-nav-icon" />,
     },
 ];
 

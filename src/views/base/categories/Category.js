@@ -5,8 +5,10 @@ import { helper } from "src/helper";
 import "./category.scss";
 import { toast, ToastContainer } from "react-toastify";
 import { CSpinner } from "@coreui/react";
+import User from "src/apis/User";
 
 const Categories = (props) => {
+    const [user, setUser] = useState();
     const [toggle, setToggle] = useState(false);
     const [categoryData, setCategoryData] = useState([]);
     const [categoryImg, setCategoryImg] = useState([]);
@@ -58,16 +60,21 @@ const Categories = (props) => {
             title: "Created By",
             align: "center",
             render: (item) => {
-                return item.created_by
-                    ? item.created_by.name
-                    : JSON.parse(localStorage.getItem("user.data")).name;
+                return item.created_by ? item.created_by.name : user.name;
             },
         },
     ]);
 
     useEffect(() => {
         getCategories();
+        getCurrentUser();
     }, []);
+
+    const getCurrentUser = () => {
+        User.showOne().then((res) => {
+            setUser(res.data);
+        });
+    };
 
     const getCategories = () => {
         Category.list()
@@ -89,7 +96,6 @@ const Categories = (props) => {
         return (
             <div>
                 <ToastContainer />
-                <h2>Categories List</h2>
                 <MaterialTable
                     title=""
                     columns={columns}
@@ -145,6 +151,8 @@ const Categories = (props) => {
                             whiteSpace: "nowrap",
                             fontFamily: "cursive",
                             fontWeight: "bolder",
+                            color: "white",
+                            backgroundColor: "#3C4B64",
                         },
                         rowStyle: {
                             fontSize: "13px",

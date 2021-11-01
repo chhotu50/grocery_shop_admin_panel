@@ -8,8 +8,10 @@ import "./products.scss";
 import { Divider, Grid, TablePagination } from "@material-ui/core";
 import { toast, ToastContainer } from "react-toastify";
 import { CSpinner } from "@coreui/react";
+import User from "src/apis/User";
 
 const Products = (props) => {
+    const [user, setUser] = useState();
     const [toggle, setToggle] = useState(false);
     const [productData, setProductData] = useState([]);
     const [productImg, setProductImg] = useState("");
@@ -59,9 +61,7 @@ const Products = (props) => {
             title: "Created By",
             align: "center",
             render: (item) => {
-                return item.created_by
-                    ? item.created_by.name
-                    : JSON.parse(localStorage.getItem("user.data")).name;
+                return item.created_by ? item.created_by.name : user.name;
             },
         },
         {
@@ -97,6 +97,12 @@ const Products = (props) => {
             setCategories([]); // This worked for me
         };
     }, []);
+
+    const getCurrentUser = () => {
+        User.showOne().then((res) => {
+            setUser(res.data);
+        });
+    };
 
     const getCategories = () => {
         axios
@@ -153,7 +159,6 @@ const Products = (props) => {
         return (
             <div>
                 <ToastContainer />
-                <h1>Products Page</h1>
                 <MaterialTable
                     title=""
                     columns={columns}
@@ -250,6 +255,8 @@ const Products = (props) => {
                             whiteSpace: "nowrap",
                             fontFamily: "cursive",
                             fontWeight: "bolder",
+                            color: "white",
+                            backgroundColor: "#3C4B64",
                         },
                         rowStyle: {
                             fontSize: "13px",
