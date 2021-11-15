@@ -14,7 +14,18 @@ const _nav = [
         to: "/products",
         icon: "cil-chart-pie",
     },
-
+    {
+        _tag: "CSidebarNavItem",
+        name: "Categories",
+        to: "/categories",
+        icon: "cilLayers",
+    },
+    {
+        _tag: "CSidebarNavItem",
+        name: "Users",
+        to: "/users",
+        icon: <CIcon name="cilUser" customClasses="c-sidebar-nav-icon" />,
+    },
     {
         _tag: "CSidebarNavDropdown",
         name: "Notifications",
@@ -43,32 +54,12 @@ const _nav = [
             },
         ],
     },
-    {
-        _tag: "CSidebarNavDivider",
-    },
 
     {
-        _tag: "CSidebarNavDropdown",
-        name: "Pages",
-        route: "/pages",
-        icon: "cil-star",
-        _children: [
-            {
-                _tag: "CSidebarNavItem",
-                name: "Login",
-                to: "/login",
-            },
-            {
-                _tag: "CSidebarNavItem",
-                name: "Register",
-                to: "/register",
-            },
-        ],
-    },
-
-    {
-        _tag: "CSidebarNavDivider",
-        className: "m-2",
+        _tag: "CSidebarNavItem",
+        name: "Profile",
+        to: "/profile",
+        icon: <CIcon name="cil-settings" customClasses="c-sidebar-nav-icon" />,
     },
 ];
 

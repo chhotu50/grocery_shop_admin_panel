@@ -6,18 +6,24 @@ const Product = {
     },
     add: (payload) => {
         let data = Product.toFormData(payload);
-        console.log(data);
-        return axios
-            .post("product", data, {
-                headers: { Authorization: localStorage.getItem("user.token") },
-            })
-            .then((res) => {
-                console.log(res);
-            });
+        return axios.post("product", data, {
+            headers: { token: localStorage.getItem("user.token") },
+        });
     },
     remove: (id) => {
         return axios.delete("product/" + id, {
-            headers: { Authorization: localStorage.getItem("user.token") },
+            headers: { token: localStorage.getItem("user.token") },
+        });
+    },
+    removeMultiple: (data) => {
+        return axios.post("product/multiple-delete", data, {
+            headers: { token: localStorage.getItem("user.token") },
+        });
+    },
+
+    update: (id, data) => {
+        return axios.put("product/" + id, data, {
+            headers: { token: localStorage.getItem("user.token") },
         });
     },
     showOne: (id) => {

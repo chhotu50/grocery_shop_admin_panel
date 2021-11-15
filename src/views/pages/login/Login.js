@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import FormValidation from "src/helper/FormValidation";
 import {
   CButton,
   CCard,
@@ -15,29 +16,53 @@ import {
   CRow,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-
+import axios from "axios";
+import { Redirect } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 const Login = (props) => {
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
-
+  const [error, setError] = useState({});
   const handleInputChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
+    setError({
+      ...error,
+      [e.target.name]: FormValidation.loginForm(e.target.name, e.target.value),
+    });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (user.email !== "" && user.password !== "") {
-      localStorage.setItem("user.token", 123456);
-      localStorage.setItem("user.role", 1);
-      props.history.push("/");
+      axios.post("/login", user).then((res) => {
+        if (res.data.status === true) {
+          console.log(res.data);
+          localStorage.setItem("user.token", res.data.token);
+          localStorage.setItem("user.role", res.data.user.role);
+          localStorage.setItem("user.data", JSON.stringify(res.data.user));
+          props.history.push("/");
+          window.location.reload();
+        } else {
+          toast.error(res.data.message, {
+            position: toast.POSITION.TOP_CENTER,
+          });
+        }
+      });
+    } else {
+      toast.error("Field is required", {
+        position: toast.POSITION.TOP_CENTER,
+      });
     }
   };
-
+  if (localStorage.getItem("user.token")) {
+    return <Redirect to="/" />;
+  }
   return (
     <div className="c-app c-default-layout flex-row align-items-center">
       <CContainer>
+        <ToastContainer />
         <CRow className="justify-content-center">
           <CCol md="8">
             <CCardGroup>
@@ -60,6 +85,7 @@ const Login = (props) => {
                         name="email"
                       />
                     </CInputGroup>
+                    {error.email && <div>{error.email}</div>}
                     <CInputGroup className="mb-4">
                       <CInputGroupPrepend>
                         <CInputGroupText>

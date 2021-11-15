@@ -1,3 +1,5 @@
+import { createStore } from "redux";
+
 const initialState = {
     sidebarShow: "responsive",
 };
@@ -11,4 +13,5 @@ const changeState = (state = initialState, { type, ...rest }) => {
     }
 };
 
-export default changeState;
+const store = createStore(changeState);
+export default store;

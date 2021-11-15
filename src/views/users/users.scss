@@ -1,0 +1,27 @@
+.status-active {
+    background: #117a03;
+    font-size: 0.9rem;
+    color: white;
+    padding: 5px 18px;
+    border-radius: 4px;
+}
+.status-deactive {
+    background: #0615dd;
+    font-size: 0.9rem;
+    color: white;
+    padding: 5px 18px;
+    border-radius: 4px;
+}
+.status-delete {
+    background: #ec0725;
+    font-size: 0.9rem;
+    color: white;
+    padding: 5px 18px;
+    border-radius: 4px;
+}
+
+.spinner {
+    position: absolute;
+    top: 50%;
+    left: 55%;
+}
