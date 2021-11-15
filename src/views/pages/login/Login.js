@@ -22,6 +22,10 @@ const Login = (props) => {
     password: "",
   });
 
+  const handleInputChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (user.email !== "" && user.password !== "") {
