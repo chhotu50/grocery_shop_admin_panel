@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MaterialTable from "material-table";
+import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import Product from "src/apis/Product";
 import DropDown from "../categories/CategoryDropdown";
 import { helper } from "./../../../helper/index";
 import "./products.scss";
@@ -13,13 +13,12 @@ import {
     fetchProductData,
     removeProduct,
     handleUpdateProduct,
+    removeMultiple,
 } from "src/store/slices/ProductSlice";
 
 const Products = (props) => {
     const dispatch = useDispatch();
-    const products = useSelector((state) =>
-        state.product.productData.map((o) => ({ ...o, tableData: {} }))
-    );
+
     const loader = useSelector((state) => state.product.loader);
     const [productData, setProductData] = useState([]);
     const [productImg, setProductImg] = useState("");
@@ -106,23 +105,22 @@ const Products = (props) => {
 
     useEffect(() => {
         dispatch(fetchProductData());
-        // getProductData();
-        // return () => {
-        //     setProductData([]);
-        // };
+        getProductData();
+        return () => {
+            setProductData([]);
+        };
     }, [dispatch]);
 
-    // const getProductData = () => {
-    //     axios
-    //         .get("product")
-    //         .then((res) => {
-    //             setToggle(true);
-    //             setProductData([...res.data.data]);
-    //         })
-    //         .catch((err) => {
-    //             toast.error(err.message, { position: "top-center" });
-    //         });
-    // };
+    const getProductData = () => {
+        axios
+            .get("product")
+            .then((res) => {
+                setProductData([...res.data.data]);
+            })
+            .catch((err) => {
+                toast.error(err.message, { position: "top-center" });
+            });
+    };
     // ----------------------------------------------------------------------------------
     const handleImg = (e) => {
         setProductImg(e.target.files[0]);
@@ -138,9 +136,7 @@ const Products = (props) => {
         let data = [];
         const selectedData = selectedRows.map((row) => data.push(row._id));
 
-        Product.removeMultiple({ ids: data.toString() }).then((res) => {
-            toast.success(res.data.message, { position: "top-center" });
-        });
+        dispatch(removeMultiple({ ids: data.toString() }));
     };
     // __________________________For total amount_______________________________
     // var sumOfferPrice = productData.reduce(function (tot, arr) {
@@ -158,7 +154,7 @@ const Products = (props) => {
                 <MaterialTable
                     title=""
                     columns={columns}
-                    data={products}
+                    data={productData}
                     // to show total amount------------------------------------------
 
                     // components={{

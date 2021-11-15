@@ -8,7 +8,7 @@ const CategorySlice = createSlice({
     initialState,
     reducers: {
         getCategories(state) {
-            state.loader = true;
+            state.loader = false;
         },
         getCategoriesSuccess: (state, { payload }) => {
             state.categoryData = payload;
@@ -16,11 +16,11 @@ const CategorySlice = createSlice({
             state.hasErrors = false;
         },
         getCategoriesFailure: (state) => {
-            state.loader = false;
+            state.loader = true;
             state.hasErrors = true;
         },
         addCategory(state) {
-            state.loader = true;
+            state.loader = false;
         },
         addCategorySuccess(state, { payload }) {
             state.loader = true;
@@ -28,11 +28,11 @@ const CategorySlice = createSlice({
             state.categoryData.push(payload);
         },
         addCategoryFailure(state) {
-            state.loader = false;
+            state.loader = true;
             state.hasErrors = true;
         },
         deleteCategory(state) {
-            state.loader = true;
+            state.loader = false;
         },
         deleteCategorySuccess(state, { payload }) {
             state.categoryData = state.categoryData.filter((element) => element._id !== payload);
@@ -40,7 +40,7 @@ const CategorySlice = createSlice({
             state.hasErrors = false;
         },
         deleteCategoryFailure(state) {
-            state.loader = false;
+            state.loader = true;
             state.hasErrors = true;
         },
     },
@@ -77,6 +77,7 @@ export function fetchCategoryData() {
 export function newCategory(data) {
     return async (dispatch) => {
         dispatch(addCategory());
+
         try {
             Category.add(data).then((res) => {
                 if (res.data.status === true) dispatch(addCategorySuccess(res.data.data));

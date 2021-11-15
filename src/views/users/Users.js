@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
 import "./users.scss";
 import MaterialTable from "material-table";
-
-import User from "src/apis/User";
+import { useDispatch, useSelector } from "react-redux";
+// import User from "src/apis/User";
 import { helper } from "src/helper";
 import { toast, ToastContainer } from "react-toastify";
 import { CSpinner } from "@coreui/react";
+import { fetchUserData } from "src/store/slices/UserSlice";
 
 const Users = (props) => {
-    const [toggle, setToggle] = useState(false);
-    const [userData, setUserData] = useState([]);
-    const [selectedRows, setSelectedRows] = useState([]);
+    const dispatch = useDispatch();
+    const users = useSelector((state) => state.user.userData.map((o) => ({ ...o })));
+    const loader = useSelector((state) => state.user.loader);
+
+    // const [userData, setUserData] = useState([]);
     const [columns, setColumns] = useState([
         {
             title: " Name",
@@ -20,14 +23,25 @@ const Users = (props) => {
         {
             title: "Photo",
             field: "photo",
+            // editComponent: (props) => {
+            //     return <input type="file" name="photo" accept="image/*" onChange={handleImg} />;
+            // },
             render: (item) => (
-                <img src="/avatars/avatar.jpeg" alt="" border="1" height="100" width="100" />
+                <img
+                    src={helper.IMAGE_BASEURL + item.photo}
+                    alt=""
+                    border="1"
+                    height="100"
+                    width="100"
+                />
             ),
         },
         { title: "Email", field: "email", validate: (rowData) => Boolean(rowData.email) },
         {
             title: "Phone",
             field: "phone",
+            align: "left",
+            type: "numeric",
             validate: (rowData) => Boolean(rowData.phone),
         },
         {
@@ -45,6 +59,7 @@ const Users = (props) => {
         {
             title: "Role",
             field: "role",
+            editable: false,
             render: (item) => {
                 if (item.role === helper.ROLE.ADMIN) {
                     return <span>Admin</span>;
@@ -55,35 +70,26 @@ const Users = (props) => {
         },
     ]);
     useEffect(() => {
-        getUser();
+        dispatch(fetchUserData());
     }, []);
+    // const getUser = () => {
+    //     User.list()
+    //         .then((res) => {
+    //             setToggle(true);
+    //             if (res.data.status === true) {
+    //                 setUserData(res.data.data);
+    //             } else {
+    //                 toast.error(res.data.message, {
+    //                     position: "top-center",
+    //                 });
+    //             }
+    //         })
+    //         .catch((err) => {
+    //             toast.error(err.message, { position: "top-center" });
+    //         });
+    // };
 
-    const getUser = () => {
-        User.list()
-            .then((res) => {
-                setToggle(true);
-                if (res.data.status === true) {
-                    setUserData(res.data.data);
-                } else {
-                    toast.error(res.data.message, {
-                        position: "top-center",
-                    });
-                }
-            })
-            .catch((err) => {
-                toast.error(err.message, { position: "top-center" });
-            });
-    };
-
-    const handleRowAdd = (newData, resolve) => {
-        console.log("add row");
-    };
-
-    const handleRowUpdate = (newData, oldData, resolve) => {
-        console.log("update row");
-    };
-
-    if (toggle) {
+    if (loader) {
         return (
             <div>
                 <ToastContainer />
@@ -91,70 +97,47 @@ const Users = (props) => {
                 <MaterialTable
                     title=""
                     columns={columns}
-                    data={userData}
-                    // onSelectionChange={(rows) => {
-                    //     setSelectedRows(rows);
-                    // }}
+                    data={users}
                     // editable={{
-                    //     onRowAdd: (newData) =>
+                    //     onRowAdd: (newRow) =>
                     //         new Promise((resolve) => {
-                    //             handleRowAdd(newData, resolve);
+                    //             const data = {
+                    //                 ...newRow,
+                    //                 photo: userImg,
+                    //             };
+
+                    //             const updatedRow = [...userData, data];
+                    //             setTimeout(() => {
+                    //                 dispatch(newUser(data));
+                    //                 setUserData(updatedRow);
+                    //                 resolve();
+                    //             }, 2000);
                     //         }),
-                    //     onRowUpdate: (newData, oldData) =>
-                    //         new Promise((resolve) => {
-                    //             handleRowUpdate(newData, oldData, resolve);
-                    //         }),
-                    // onRowDelete: (selectedRow) =>
-                    //     new Promise((resolve, reject) => {
-                    //         const index = selectedRow.tableData.id;
-                    //         const updatedRows = [...userData];
-                    //         updatedRows.splice(index, 1);
-                    //         setTimeout(() => {
-                    //             User.remove(selectedRow._id)
-                    //                 .then((res) => {
-                    //                     if (res.data.status === true) {
-                    //                         setUserData(updatedRows);
-                    //                         toast.success("Removed", {
-                    //                             position: "top-center",
-                    //                         });
-                    //                     }
-                    //                 })
-                    //                 .catch((err) => {
-                    //                     toast.error(err.message, { position: "top-center" });
-                    //                 });
-                    //             resolve();
-                    //         }, 1000);
-                    //     }),
                     // }}
-                    // actions={[
-                    //     {
-                    //         icon: "delete",
-                    //         tooltip: "Delete Selected",
-                    //         onClick: () => {
-                    //             handleBulkDelete();
-                    //         },
-                    //     },
-                    // ]}
                     options={{
                         headerStyle: {
                             fontSize: "1.2rem",
                             whiteSpace: "nowrap",
                             fontFamily: "cursive",
                             fontWeight: "bolder",
+                            color: "white",
+                            backgroundColor: "#3C4B64",
                         },
                         rowStyle: {
                             fontSize: "13px",
                         },
                         tableLayout: "auto",
-                        // selection: true,
                         exportButton: true,
+                        selection: true,
                         exportAllData: true,
                         addRowPosition: "first",
+                        columnsButton: true,
+                        actionsColumnIndex: -1,
                     }}
                 />
             </div>
         );
-    } else if (!toggle) {
+    } else if (!loader) {
         return <CSpinner variant="grow" className="spinner" />;
     }
 };

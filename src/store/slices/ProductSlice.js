@@ -8,7 +8,7 @@ const ProductSlice = createSlice({
     initialState,
     reducers: {
         getProducts(state) {
-            state.loader = true;
+            state.loader = false;
         },
         getProductsSuccess: (state, { payload }) => {
             state.productData = payload;
@@ -16,11 +16,11 @@ const ProductSlice = createSlice({
             state.hasErrors = false;
         },
         getProductsFailure: (state) => {
-            state.loader = false;
+            state.loader = true;
             state.hasErrors = true;
         },
         addProduct(state) {
-            state.loader = true;
+            state.loader = false;
         },
         addProductSuccess(state, { payload }) {
             state.loader = true;
@@ -28,11 +28,11 @@ const ProductSlice = createSlice({
             state.productData.push(payload);
         },
         addProductFailure(state) {
-            state.loader = false;
+            state.loader = true;
             state.hasErrors = true;
         },
         deleteProduct(state) {
-            state.loader = true;
+            state.loader = false;
         },
         deleteProductSuccess(state, { payload }) {
             state.productData = state.productData.filter((element) => element._id !== payload);
@@ -40,11 +40,22 @@ const ProductSlice = createSlice({
             state.hasErrors = false;
         },
         deleteProductFailure(state) {
+            state.loader = true;
+            state.hasErrors = true;
+        },
+        deleteMultiple(state) {
             state.loader = false;
+        },
+        deleteMultipleSuccess(state, { payload }) {
+            state.loader = true;
+            state.hasErrors = false;
+        },
+        deleteMultipleFailure(state) {
+            state.loader = true;
             state.hasErrors = true;
         },
         updateProduct(state) {
-            state.loader = true;
+            state.loader = false;
         },
         updateProductSuccess(state, { payload }) {
             const index = state.productData.findIndex((obj) => obj._id === payload._id);
@@ -69,6 +80,9 @@ export const {
     deleteProduct,
     deleteProductSuccess,
     deleteProductFailure,
+    deleteMultiple,
+    deleteMultipleSuccess,
+    deleteMultipleFailure,
     updateProduct,
     updateProductSuccess,
     updateProductFailure,
@@ -112,6 +126,19 @@ export function removeProduct(id, data) {
             });
         } catch (err) {
             dispatch(deleteProductFailure());
+        }
+    };
+}
+
+export function removeMultiple(data) {
+    return async (dispatch) => {
+        dispatch(deleteMultiple());
+        try {
+            Product.removeMultiple(data).then((res) => {
+                if (res.data.status === true) dispatch(deleteMultipleSuccess());
+            });
+        } catch (err) {
+            dispatch(deleteMultipleFailure());
         }
     };
 }

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import {
     CBadge,
     CDropdown,
@@ -10,31 +11,23 @@ import {
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import { useHistory } from "react-router";
-import User from "src/apis/User";
+import { helper } from "src/helper";
 
 const TheHeaderDropdown = () => {
-    const [user, setUser] = useState({});
-    useEffect(() => {
-        currentUserData();
-    }, []);
     const history = useHistory();
+    const currentUser = useSelector((state) => state.currentUser.currentUserData);
+
     const handleLogout = () => {
         localStorage.clear();
         history.push("/login");
     };
-    const currentUserData = () => {
-        User.showOne(data._id).then((res) => {
-            setUser(res.data.data);
-        });
-    };
-    const data = JSON.parse(localStorage.getItem("user.data"));
+
     return (
         <CDropdown inNav className="c-header-nav-items mx-2" direction="down">
             <CDropdownToggle className="c-header-nav-link" caret={false}>
                 <div className="c-avatar">
                     <CImg
-                        // src={helper.IMAGE_BASEURL + user.photo}
-                        src={"./avatars/avatar.jpeg"}
+                        src={helper.IMAGE_BASEURL + currentUser.photo}
                         className="c-avatar-img"
                         alt="admin"
                     />

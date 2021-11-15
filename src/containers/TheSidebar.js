@@ -18,13 +18,11 @@ import "./../scss/_custom.scss";
 
 const TheSidebar = () => {
     const dispatch = useDispatch();
-    const show = useSelector((state) => state.sidebarShow);
+    const show = useSelector((state) => state.sidebar.sidebarShow);
 
     return (
-        <CSidebar show={show} onShowChange={(val) => dispatch({ type: "set", sidebarShow: val })}>
+        <CSidebar show={show} onShowChange={(val) => dispatch({ sidebarShow: val })}>
             <CSidebarBrand className="d-md-down-none" to="/">
-                {/* <CIcon className="c-sidebar-brand-full" name="logo-negative" height={35} />
-                <CIcon className="c-sidebar-brand-minimized" name="sygnet" height={35} /> */}
                 <h1 className="logo">Admin Panel</h1>
             </CSidebarBrand>
             <CSidebarNav>
