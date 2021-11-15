@@ -22,7 +22,7 @@ const User = {
         });
     },
     edit: (payload, id) => {
-        return axios.put("users/" + id, payload, {
+        return axios.put("user/update/" + id, payload, {
             headers: { token: localStorage.getItem("user.token") },
         });
     },
@@ -30,6 +30,12 @@ const User = {
     profilePhoto: (payload) => {
         let data = User.toFormData(payload);
         return axios.post("user/profilePhotoChange", data, {
+            headers: { token: localStorage.getItem("user.token") },
+        });
+    },
+
+    password: (payload) => {
+        return axios.post("change-password", payload, {
             headers: { token: localStorage.getItem("user.token") },
         });
     },

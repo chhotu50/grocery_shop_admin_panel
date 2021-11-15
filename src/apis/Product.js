@@ -20,6 +20,12 @@ const Product = {
             headers: { token: localStorage.getItem("user.token") },
         });
     },
+
+    update: (id, data) => {
+        return axios.put("product/" + id, data, {
+            headers: { token: localStorage.getItem("user.token") },
+        });
+    },
     showOne: (id) => {
         return axios.get("products/" + id);
     },

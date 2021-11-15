@@ -8,7 +8,13 @@ import { toast, ToastContainer } from "react-toastify";
 const Profile = () => {
     const [toggle, setToggle] = useState(true);
     const [user, setUser] = useState({});
+    const [password, setPassword] = useState({
+        currentPassword: "",
+        newPassword: "",
+        verifyPassword: "",
+    });
     const data = JSON.parse(localStorage.getItem("user.data"));
+
     useEffect(() => {
         currentUserData();
     }, []);
@@ -19,25 +25,66 @@ const Profile = () => {
         });
     };
 
-    const handleImgChange = (e) => {
-        const data = { photo: e.target.files[0] };
-        User.profilePhoto(data).then((res) => {
-            setUser({ ...user, photo: res.data.data.photo });
-            toast.success("Success!", { position: "top-center" });
-        });
-    };
-
     const handleInputChange = (e) => {
         setUser({ ...user, [e.target.name]: e.target.value });
     };
+
+    const handlePassChange = (e) => {
+        setPassword({ ...password, [e.target.name]: e.target.value });
+    };
+
+    const handleImgChange = (e) => {
+        const data = { photo: e.target.files[0] };
+        User.profilePhoto(data).then((res) => {
+            if (res.data.status === true) setUser({ ...user, photo: res.data.data.photo });
+            toast.success("Success!", { position: "top-center" });
+        });
+    };
+    console.log(user);
     //-----------------------------------submit details remaining
     const handleSubmit = (e) => {
+        const data = {
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            address: user.address,
+        };
         e.preventDefault();
+        User.edit(data, user._id)
+            .then((res) => {
+                if (res.data.status === true) setToggle(true);
+                setUser({ ...user, ...data });
+                toast.success(res.data.message, { position: "top-center" });
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
+    const handlePassSubmit = (e) => {
+        e.preventDefault();
+        if (
+            password.currentPassword !== "" &&
+            password.newPassword !== "" &&
+            password.verifyPassword !== ""
+        ) {
+            User.password(password).then((res) => {
+                if (res.data.status === true) {
+                    setPassword({ currentPassword: "", newPassword: "", verifyPassword: "" });
+                    toast.success(res.data.message, { position: "top-center" });
+                } else {
+                    toast.error(res.data.message, { position: "top-center" });
+                }
+            });
+        } else {
+            toast.error("Please fill all the fields!!", { position: "top-center" });
+        }
     };
 
     const handleToggle = () => {
         setToggle(!toggle);
     };
+
     return (
         <>
             <ToastContainer />
@@ -68,12 +115,12 @@ const Profile = () => {
                                             />
                                         </div>
                                         <div className="mt-3">
-                                            <h4>{data.name}</h4>
+                                            <h4>{user.name}</h4>
                                             <p className="text-secondary mb-1">
-                                                {data.role === 1 ? "Admin" : "User"}
+                                                {user.role === 1 ? "Admin" : "User"}
                                             </p>
                                             <p className="text-muted font-size-sm">
-                                                Bay Area, San Francisco, CA
+                                                {user.address}
                                             </p>
                                         </div>
                                     </div>
@@ -90,9 +137,9 @@ const Profile = () => {
                                                 viewBox="0 0 24 24"
                                                 fill="none"
                                                 stroke="currentColor"
-                                                stroke-width="2"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
                                                 className="feather feather-globe mr-2 icon-inline"
                                             >
                                                 <circle cx="12" cy="12" r="10"></circle>
@@ -114,9 +161,9 @@ const Profile = () => {
                                                 viewBox="0 0 24 24"
                                                 fill="none"
                                                 stroke="currentColor"
-                                                stroke-width="2"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
                                                 className="feather feather-github mr-2 icon-inline"
                                             >
                                                 <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
@@ -134,9 +181,9 @@ const Profile = () => {
                                                 viewBox="0 0 24 24"
                                                 fill="none"
                                                 stroke="currentColor"
-                                                stroke-width="2"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
                                                 className="feather feather-twitter mr-2 icon-inline text-info"
                                             >
                                                 <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
@@ -154,9 +201,9 @@ const Profile = () => {
                                                 viewBox="0 0 24 24"
                                                 fill="none"
                                                 stroke="currentColor"
-                                                stroke-width="2"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
                                                 className="feather feather-instagram mr-2 icon-inline text-danger"
                                             >
                                                 <rect
@@ -183,9 +230,9 @@ const Profile = () => {
                                                 viewBox="0 0 24 24"
                                                 fill="none"
                                                 stroke="currentColor"
-                                                stroke-width="2"
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
                                                 className="feather feather-facebook mr-2 icon-inline text-primary"
                                             >
                                                 <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
@@ -203,10 +250,10 @@ const Profile = () => {
                                     <div className="card-body">
                                         <div className="row">
                                             <div className="col-sm-3">
-                                                <h6 className="mb-0">Full Name</h6>
+                                                <h6 className="mb-0">Name</h6>
                                             </div>
                                             <div className="col-sm-9 text-secondary">
-                                                {data.name}
+                                                {user.name}
                                             </div>
                                         </div>
                                         <hr />
@@ -215,7 +262,7 @@ const Profile = () => {
                                                 <h6 className="mb-0">Email</h6>
                                             </div>
                                             <div className="col-sm-9 text-secondary">
-                                                {data.email}
+                                                {user.email}
                                             </div>
                                         </div>
                                         <hr />
@@ -224,7 +271,7 @@ const Profile = () => {
                                                 <h6 className="mb-0">Phone</h6>
                                             </div>
                                             <div className="col-sm-9 text-secondary">
-                                                {data.phone}
+                                                {user.phone}
                                             </div>
                                         </div>
                                         <hr />
@@ -233,7 +280,7 @@ const Profile = () => {
                                                 <h6 className="mb-0">Address</h6>
                                             </div>
                                             <div className="col-sm-9 text-secondary">
-                                                {data.address}
+                                                {user.address}
                                             </div>
                                         </div>
                                         <hr />
@@ -245,14 +292,6 @@ const Profile = () => {
                                                     style={{ fontWeight: 800 }}
                                                 >
                                                     Edit
-                                                </Button>
-                                            </div>
-                                            <div className="col-sm-2">
-                                                <Button
-                                                    onClick={handleSubmit}
-                                                    style={{ fontWeight: 800 }}
-                                                >
-                                                    Submit
                                                 </Button>
                                             </div>
                                         </div>
@@ -330,7 +369,7 @@ const Profile = () => {
                                                     onClick={handleToggle}
                                                     style={{ fontWeight: 800 }}
                                                 >
-                                                    Edit
+                                                    Details
                                                 </Button>
                                             </div>
                                             <div className="col-sm-2">
@@ -351,12 +390,12 @@ const Profile = () => {
                                 <div className="col-sm-6 mb-3">
                                     <div className="card h-100">
                                         <div className="card-body">
-                                            <h6 className="d-flex align-items-center mb-3">
+                                            <h5 className="d-flex align-items-center mb-3">
                                                 <i className="material-icons text-info mr-2">
                                                     assignment
                                                 </i>
                                                 Project Status
-                                            </h6>
+                                            </h5>
                                             <small>Web Design</small>
                                             <div
                                                 className="progress mb-3"
@@ -431,83 +470,56 @@ const Profile = () => {
                                     </div>
                                 </div>
                                 <div className="col-sm-6 mb-3">
-                                    <div className="card h-100">
+                                    <div className=" card h-100">
                                         <div className="card-body">
-                                            <h6 className="d-flex align-items-center mb-3">
+                                            <h5 className="d-flex align-items-center mb-3">
                                                 <i className="material-icons text-info mr-2">
                                                     assignment
                                                 </i>
-                                                Project Status
-                                            </h6>
-                                            <small>Web Design</small>
-                                            <div
-                                                className="progress mb-3"
-                                                style={{ height: "5px" }}
-                                            >
-                                                <div
-                                                    className="progress-bar bg-primary"
-                                                    role="progressbar"
-                                                    style={{ width: "80%" }}
-                                                    aria-valuenow="80"
-                                                    aria-valuemin="0"
-                                                    aria-valuemax="100"
-                                                ></div>
+                                                Change Password
+                                            </h5>
+                                            <div className="mt-4">
+                                                <h6>Current Password:</h6>
+                                                <TextField
+                                                    className="profile-input"
+                                                    type="password"
+                                                    name="currentPassword"
+                                                    fullWidth
+                                                    value={password.currentPassword}
+                                                    onChange={handlePassChange}
+                                                />
                                             </div>
-                                            <small>Website Markup</small>
-                                            <div
-                                                className="progress mb-3"
-                                                style={{ height: "5px" }}
-                                            >
-                                                <div
-                                                    className="progress-bar bg-primary"
-                                                    role="progressbar"
-                                                    style={{ width: "72%" }}
-                                                    aria-valuenow="72"
-                                                    aria-valuemin="0"
-                                                    aria-valuemax="100"
-                                                ></div>
+                                            <div className="mt-4">
+                                                <h6>New Password:</h6>
+                                                <TextField
+                                                    className="profile-input"
+                                                    type="password"
+                                                    name="newPassword"
+                                                    fullWidth
+                                                    value={password.newPassword}
+                                                    onChange={handlePassChange}
+                                                />
                                             </div>
-                                            <small>One Page</small>
-                                            <div
-                                                className="progress mb-3"
-                                                style={{ height: "5px" }}
-                                            >
-                                                <div
-                                                    className="progress-bar bg-primary"
-                                                    role="progressbar"
-                                                    style={{ width: "89%" }}
-                                                    aria-valuenow="89"
-                                                    aria-valuemin="0"
-                                                    aria-valuemax="100"
-                                                ></div>
+                                            <div className="mt-4">
+                                                <h6>Confirm Password:</h6>
+                                                <TextField
+                                                    className="profile-input"
+                                                    type="password"
+                                                    name="verifyPassword"
+                                                    fullWidth
+                                                    value={password.verifyPassword}
+                                                    onChange={handlePassChange}
+                                                />
                                             </div>
-                                            <small>Mobile Template</small>
-                                            <div
-                                                className="progress mb-3"
-                                                style={{ height: "5px" }}
-                                            >
-                                                <div
-                                                    className="progress-bar bg-primary"
-                                                    role="progressbar"
-                                                    style={{ width: "55%" }}
-                                                    aria-valuenow="55"
-                                                    aria-valuemin="0"
-                                                    aria-valuemax="100"
-                                                ></div>
-                                            </div>
-                                            <small>Backend API</small>
-                                            <div
-                                                className="progress mb-3"
-                                                style={{ height: "5px" }}
-                                            >
-                                                <div
-                                                    className="progress-bar bg-primary"
-                                                    role="progressbar"
-                                                    style={{ width: "66%" }}
-                                                    aria-valuenow="66"
-                                                    aria-valuemin="0"
-                                                    aria-valuemax="100"
-                                                ></div>
+                                            <div className="d-flex justify-content-end">
+                                                <Button
+                                                    variant="outlined"
+                                                    className="m-3"
+                                                    style={{ fontWeight: 800 }}
+                                                    onClick={handlePassSubmit}
+                                                >
+                                                    Submit
+                                                </Button>
                                             </div>
                                         </div>
                                     </div>
@@ -517,6 +529,7 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
+            {/* ================================================================================================= */}
         </>
     );
 };

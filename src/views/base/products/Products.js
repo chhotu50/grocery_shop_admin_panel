@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MaterialTable from "material-table";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
 import Product from "src/apis/Product";
 import DropDown from "../categories/CategoryDropdown";
 import { helper } from "./../../../helper/index";
@@ -8,12 +8,21 @@ import "./products.scss";
 import { Divider, Grid, TablePagination } from "@material-ui/core";
 import { toast, ToastContainer } from "react-toastify";
 import { CSpinner } from "@coreui/react";
+import {
+    newProduct,
+    fetchProductData,
+    removeProduct,
+    handleUpdateProduct,
+} from "src/store/slices/ProductSlice";
 
 const Products = (props) => {
-    const [toggle, setToggle] = useState(false);
+    const dispatch = useDispatch();
+    const products = useSelector((state) =>
+        state.product.productData.map((o) => ({ ...o, tableData: {} }))
+    );
+    const loader = useSelector((state) => state.product.loader);
     const [productData, setProductData] = useState([]);
     const [productImg, setProductImg] = useState("");
-    const [categories, setCategories] = useState([]);
     const [categoryChange, setCategoryChange] = useState({ title: "" });
     const [selectedRows, setSelectedRows] = useState([]);
     const [columns, setColumns] = useState([
@@ -33,20 +42,23 @@ const Products = (props) => {
         {
             title: "Price",
             field: "price",
-            type: "numeric",
-            validate: (rowData) => Boolean(rowData.title),
+            type: "currency",
+            currencySetting: { currencyCode: "INR" },
+            validate: (rowData) => Boolean(rowData.price),
         },
 
         {
             title: "Offer Price",
             field: "offer_price",
-            type: "numeric",
+            type: "currency",
+            currencySetting: { currencyCode: "INR" },
             align: "center",
-            validate: (rowData) => Boolean(rowData.created_at),
+            validate: (rowData) => Boolean(rowData.offer_price),
         },
         {
             title: "Photo",
             field: "photo",
+            editable: "onAdd",
             editComponent: (props) => {
                 return <input type="file" name="photo" accept="image/*" onChange={handleImg} />;
             },
@@ -58,6 +70,7 @@ const Products = (props) => {
         {
             title: "Created By",
             align: "center",
+            editable: "onAdd",
             render: (item) => {
                 return item.created_by
                     ? item.created_by.name
@@ -81,6 +94,7 @@ const Products = (props) => {
             title: "Created At",
             align: "center",
             field: "created_at",
+            editable: "onAdd",
             validate: (rowData) => Boolean(rowData.created_at),
             type: "date",
             dateSetting: {
@@ -89,39 +103,26 @@ const Products = (props) => {
         },
     ]);
     // -------------------------------------------------------------------------------------
+
     useEffect(() => {
-        getProductData();
-        getCategories();
-        return () => {
-            setProductData([]);
-            setCategories([]); // This worked for me
-        };
-    }, []);
+        dispatch(fetchProductData());
+        // getProductData();
+        // return () => {
+        //     setProductData([]);
+        // };
+    }, [dispatch]);
 
-    const getCategories = () => {
-        axios
-            .get("categories")
-            .then((res) => {
-                if (res.data.status === true) {
-                    setCategories(res.data.data);
-                }
-            })
-            .catch((err) => {
-                toast.error(err.message, { position: "top-center" });
-            });
-    };
-
-    const getProductData = () => {
-        axios
-            .get("product")
-            .then((res) => {
-                setToggle(true);
-                setProductData([...res.data.data]);
-            })
-            .catch((err) => {
-                toast.error(err.message, { position: "top-center" });
-            });
-    };
+    // const getProductData = () => {
+    //     axios
+    //         .get("product")
+    //         .then((res) => {
+    //             setToggle(true);
+    //             setProductData([...res.data.data]);
+    //         })
+    //         .catch((err) => {
+    //             toast.error(err.message, { position: "top-center" });
+    //         });
+    // };
     // ----------------------------------------------------------------------------------
     const handleImg = (e) => {
         setProductImg(e.target.files[0]);
@@ -141,44 +142,47 @@ const Products = (props) => {
             toast.success(res.data.message, { position: "top-center" });
         });
     };
+    // __________________________For total amount_______________________________
+    // var sumOfferPrice = productData.reduce(function (tot, arr) {
+    //     return tot + parseInt(arr.offer_price);
+    // }, 0);
 
-    var sumOfferPrice = productData.reduce(function (tot, arr) {
-        return tot + parseInt(arr.offer_price);
-    }, 0);
+    // var sumPrice = productData.reduce(function (tot, arr) {
+    //     return tot + parseInt(arr.price);
+    // }, 0);
 
-    var sumPrice = productData.reduce(function (tot, arr) {
-        return tot + parseInt(arr.price);
-    }, 0);
-    if (toggle) {
+    if (loader) {
         return (
             <div>
                 <ToastContainer />
                 <MaterialTable
                     title=""
                     columns={columns}
-                    data={productData}
-                    components={{
-                        Pagination: (props) => (
-                            <div>
-                                <Grid
-                                    container
-                                    style={{ padding: "16px 0 ", fontWeight: "bolder" }}
-                                >
-                                    <Grid item sm={3} align="right">
-                                        Total:
-                                    </Grid>
-                                    <Grid item sm={2} align="right">
-                                        <span className="total">{sumPrice.toFixed(2)}</span>
-                                    </Grid>
-                                    <Grid item sm={1} align="right">
-                                        <span className="total">{sumOfferPrice.toFixed(2)}</span>
-                                    </Grid>
-                                </Grid>
-                                <Divider />
-                                <TablePagination {...props} />
-                            </div>
-                        ),
-                    }}
+                    data={products}
+                    // to show total amount------------------------------------------
+
+                    // components={{
+                    //     Pagination: (props) => (
+                    //         <div>
+                    //             <Grid
+                    //                 container
+                    //                 style={{ padding: "16px 0 ", fontWeight: "bolder" }}
+                    //             >
+                    //                 <Grid item sm={3} align="right">
+                    //                     Total:
+                    //                 </Grid>
+                    //                 <Grid item sm={2} align="right">
+                    //                     <span className="total">{sumPrice.toFixed(2)}</span>
+                    //                 </Grid>
+                    //                 <Grid item sm={1} align="right">
+                    //                     <span className="total">{sumOfferPrice.toFixed(2)}</span>
+                    //                 </Grid>
+                    //             </Grid>
+                    //             <Divider />
+                    //             <TablePagination {...props} />
+                    //         </div>
+                    //     ),
+                    // }}
                     onSelectionChange={(rows) => {
                         setSelectedRows(rows);
                     }}
@@ -193,19 +197,21 @@ const Products = (props) => {
 
                                 const updatedRow = [...productData, data];
                                 setTimeout(() => {
-                                    Product.add(data)
-                                        .then((res) => {
-                                            if (res.data.status === true) {
-                                                toast.success(res.data.message, {
-                                                    position: "top-center",
-                                                });
-                                                setProductData(updatedRow);
-                                                getProductData();
-                                            }
-                                        })
-                                        .catch((err) => {
-                                            toast.error(err.message, { position: "top-center" });
-                                        });
+                                    dispatch(newProduct(data));
+                                    setProductData(updatedRow);
+                                    // Product.add(data)
+                                    //     .then((res) => {
+                                    //         if (res.data.status === true) {
+                                    //             toast.success(res.data.message, {
+                                    //                 position: "top-center",
+                                    //             });
+                                    //             setProductData(updatedRow);
+                                    //             getProductData();
+                                    //         }
+                                    //     })
+                                    //     .catch((err) => {
+                                    //         toast.error(err.message, { position: "top-center" });
+                                    //     });
 
                                     resolve();
                                 }, 2000);
@@ -217,31 +223,59 @@ const Products = (props) => {
                                 const updatedRows = [...productData];
                                 updatedRows.splice(index, 1);
                                 setTimeout(() => {
-                                    Product.remove(selectedRow._id)
-                                        .then((res) => {
-                                            if (res.data.status === true) {
-                                                setProductData(updatedRows);
-                                                toast.success("Removed", {
-                                                    position: "top-center",
-                                                });
-                                            }
-                                        })
-                                        .catch((err) => {
-                                            toast.error(err.message, { position: "top-center" });
-                                        });
+                                    dispatch(removeProduct(selectedRow._id));
+                                    setProductData(updatedRows);
+                                    resolve();
+                                    // Product.remove(selectedRow._id)
+                                    //     .then((res) => {
+                                    //         if (res.data.status === true) {
+                                    //             setProductData(updatedRows);
+                                    //             toast.success("Removed", {
+                                    //                 position: "top-center",
+                                    //             });
+                                    //         }
+                                    //     })
+                                    //     .catch((err) => {
+                                    //         toast.error(err.message, { position: "top-center" });
+                                    //     });
+                                }, 1000);
+                            }),
+                        onRowUpdate: (updatedRow, oldRow) =>
+                            new Promise((resolve, reject) => {
+                                const data = {
+                                    title: updatedRow.title,
+                                    category_id: categoryChange._id,
+                                    price: updatedRow.price.toString(),
+                                    offer_price: updatedRow.offer_price,
+                                };
+                                const index = oldRow.tableData.id;
+                                const updatedRows = [...productData];
+                                updatedRows[index] = updatedRow;
+                                setTimeout(() => {
+                                    dispatch(handleUpdateProduct({ ...data, id: oldRow._id }));
+                                    setProductData(updatedRows);
+
+                                    // Product.update(oldRow._id, data)
+                                    //     .then((res) => {
+                                    //         if (res.data.status === true) {
+                                    //             console.log(res.data);
+                                    // setProductData(updatedRows);
+                                    //             toast.success(res.data.message, {
+                                    //                 position: "top-center",
+                                    //             });
+                                    //         } else {
+                                    //             console.log(res.data);
+                                    //             toast.error(res.data.message, {
+                                    //                 position: "top-center",
+                                    //             });
+                                    //         }
+                                    //     })
+                                    //     .catch((err) => {
+                                    //         console.log(err);
+                                    //     });
                                     resolve();
                                 }, 1000);
                             }),
-                        //     onRowUpdate: (updatedRow, oldRow) =>
-                        //         new Promise((resolve, reject) => {
-                        //             const index = oldRow.tableData.id;
-                        //             const updatedRows = [...productData];
-                        //             updatedRows[index] = updatedRow;
-                        //             setTimeout(() => {
-                        //                 setProductData(updatedRows);
-                        //                 resolve();
-                        //             }, 1000);
-                        //         }),
                     }}
                     options={{
                         headerStyle: {
@@ -274,7 +308,7 @@ const Products = (props) => {
                 />
             </div>
         );
-    } else if (!toggle) {
+    } else if (!loader) {
         return <CSpinner variant="grow" className="spinner" />;
     }
 };

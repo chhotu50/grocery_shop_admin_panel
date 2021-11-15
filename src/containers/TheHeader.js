@@ -9,21 +9,16 @@ import {
     CHeaderNavLink,
     CSubheader,
     CBreadcrumbRouter,
-    CLink,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import routes from "../routes";
 
-import {
-    TheHeaderDropdown,
-    TheHeaderDropdownMssg,
-    TheHeaderDropdownNotif,
-    TheHeaderDropdownTasks,
-} from "./index";
+import { TheHeaderDropdown } from "./index";
 
 const TheHeader = () => {
     const dispatch = useDispatch();
-    const sidebarShow = useSelector((state) => state.changeState.sidebarShow);
+    const sidebarShow = useSelector((state) => state.sidebarShow);
+
     const toggleSidebar = () => {
         const val = [true, "responsive"].includes(sidebarShow) ? false : "responsive";
         dispatch({ type: "set", sidebarShow: val });
@@ -33,6 +28,7 @@ const TheHeader = () => {
         const val = [false, "responsive"].includes(sidebarShow) ? true : "responsive";
         dispatch({ type: "set", sidebarShow: val });
     };
+
     return (
         <CHeader withSubheader>
             <CToggler inHeader className="ml-md-3 d-lg-none" onClick={toggleSidebarMobile} />
@@ -51,9 +47,6 @@ const TheHeader = () => {
             </CHeaderNav>
 
             <CHeaderNav className="px-3">
-                <TheHeaderDropdownNotif />
-                <TheHeaderDropdownTasks />
-                <TheHeaderDropdownMssg />
                 <TheHeaderDropdown />
             </CHeaderNav>
 

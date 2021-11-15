@@ -4,7 +4,6 @@ const Products = React.lazy(() => import("./views/base/products/Products"));
 const Categories = React.lazy(() => import("./views/base/categories/Category"));
 const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"));
 const Users = React.lazy(() => import("./views/users/Users"));
-const User = React.lazy(() => import("./views/users/User"));
 const Profile = React.lazy(() => import("./views/base/profile/Profile"));
 
 const routes = [
@@ -13,7 +12,6 @@ const routes = [
     { path: "/products", name: "Products", component: Products },
     { path: "/categories", name: "Categories", component: Categories },
     { path: "/users", exact: true, name: "Users", component: Users },
-    { path: "/users/:id", exact: true, name: "User Details", component: User },
     { path: "/profile", exact: true, name: "Profile", component: Profile },
 ];
 

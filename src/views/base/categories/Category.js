@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from "react";
 import MaterialTable from "material-table";
-import Category from "src/apis/Category";
 import { helper } from "src/helper";
 import "./category.scss";
 import { toast, ToastContainer } from "react-toastify";
 import { CSpinner } from "@coreui/react";
-import User from "src/apis/User";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCategoryData, newCategory, removeCategory } from "src/store/slices/CategorySlice";
 
 const Categories = (props) => {
-    const [toggle, setToggle] = useState(false);
+    const dispatch = useDispatch();
+    const category = useSelector((state) =>
+        state.category.categoryData.map((o) => ({ ...o, tableData: {} }))
+    );
+    const loader = useSelector((state) => state.category.loader);
+
     const [categoryData, setCategoryData] = useState([]);
     const [categoryImg, setCategoryImg] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
+
     const [columns, setColumns] = useState([
         {
             title: " Name",
@@ -40,8 +46,8 @@ const Categories = (props) => {
                     return <span className="status-active">Active</span>;
                 } else if (item.status === helper.STATUS.DEACTIVE) {
                     return <span className="status-deactive">Deactive</span>;
-                } else {
-                    return <span className="status-deleted">Deleted</span>;
+                } else if (item.status === undefined) {
+                    return <span className="status-active">Active</span>;
                 }
             },
         },
@@ -61,39 +67,26 @@ const Categories = (props) => {
             render: (item) => {
                 return item.created_by
                     ? item.created_by.name
-                    : localStorage.getItem("user.data").name;
+                    : JSON.parse(localStorage.getItem("user.data")).name;
             },
         },
     ]);
 
     useEffect(() => {
-        getCategories();
-    }, []);
-
-    const getCategories = () => {
-        Category.list()
-            .then((res) => {
-                if (res.data.status === true) {
-                    setToggle(true);
-                    setCategoryData(res.data.data);
-                }
-            })
-            .catch((err) => {
-                toast.error(err.message, { position: "top-center" });
-            });
-    };
+        dispatch(fetchCategoryData());
+    }, [dispatch]);
 
     const handleImg = (e) => {
         setCategoryImg(e.target.files[0]);
     };
-    if (toggle) {
+    if (loader) {
         return (
             <div>
                 <ToastContainer />
                 <MaterialTable
                     title=""
                     columns={columns}
-                    data={categoryData}
+                    data={category}
                     onSelectionChange={(rows) => {
                         setSelectedRows(rows);
                     }}
@@ -104,22 +97,8 @@ const Categories = (props) => {
                                     ...newRow,
                                     photo: categoryImg,
                                 };
-
-                                const updatedRow = [...categoryData, data];
                                 setTimeout(() => {
-                                    Category.add(data)
-                                        .then((res) => {
-                                            if (res.data.status === true) {
-                                                toast.success(res.data.message, {
-                                                    position: "top-center",
-                                                });
-                                                setCategoryData(updatedRow);
-                                                getCategories();
-                                            }
-                                        })
-                                        .catch((err) =>
-                                            toast.error(err.message, { position: "top-center" })
-                                        );
+                                    dispatch(newCategory(data));
 
                                     resolve();
                                 }, 2000);
@@ -131,13 +110,22 @@ const Categories = (props) => {
                                 const updatedRows = [...categoryData];
                                 updatedRows.splice(index, 1);
                                 setTimeout(() => {
-                                    Category.remove(selectedRow._id).then(() => {
-                                        toast.success("Removed", { position: "top-center" });
-                                        setCategoryData(updatedRows);
-                                    });
+                                    dispatch(removeCategory(selectedRow._id));
                                     resolve();
                                 }, 1000);
                             }),
+                    }}
+                    localization={{
+                        body: {
+                            editRow: {
+                                deleteText: (
+                                    <p style={{ fontSize: "16px", color: "gray" }}>
+                                        Are you sure you want to disable this category? If you do so
+                                        all the products of this category will be removed.
+                                    </p>
+                                ),
+                            },
+                        },
                     }}
                     options={{
                         headerStyle: {
@@ -152,7 +140,6 @@ const Categories = (props) => {
                             fontSize: "13px",
                         },
                         tableLayout: "auto",
-                        selection: true,
                         exportButton: true,
                         exportAllData: true,
                         addRowPosition: "first",
@@ -161,7 +148,7 @@ const Categories = (props) => {
                 />
             </div>
         );
-    } else if (!toggle) {
+    } else if (!loader) {
         return <CSpinner variant="grow" className="spinner" />;
     }
 };

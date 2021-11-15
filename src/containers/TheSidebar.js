@@ -18,7 +18,7 @@ import "./../scss/_custom.scss";
 
 const TheSidebar = () => {
     const dispatch = useDispatch();
-    const show = useSelector((state) => state.changeState.sidebarShow);
+    const show = useSelector((state) => state.sidebarShow);
 
     return (
         <CSidebar show={show} onShowChange={(val) => dispatch({ type: "set", sidebarShow: val })}>

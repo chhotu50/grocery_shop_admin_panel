@@ -92,40 +92,40 @@ const Users = (props) => {
                     title=""
                     columns={columns}
                     data={userData}
-                    onSelectionChange={(rows) => {
-                        setSelectedRows(rows);
-                    }}
-                    editable={{
-                        onRowAdd: (newData) =>
-                            new Promise((resolve) => {
-                                handleRowAdd(newData, resolve);
-                            }),
-                        onRowUpdate: (newData, oldData) =>
-                            new Promise((resolve) => {
-                                handleRowUpdate(newData, oldData, resolve);
-                            }),
-                        onRowDelete: (selectedRow) =>
-                            new Promise((resolve, reject) => {
-                                const index = selectedRow.tableData.id;
-                                const updatedRows = [...userData];
-                                updatedRows.splice(index, 1);
-                                setTimeout(() => {
-                                    User.remove(selectedRow._id)
-                                        .then((res) => {
-                                            if (res.data.status === true) {
-                                                setUserData(updatedRows);
-                                                toast.success("Removed", {
-                                                    position: "top-center",
-                                                });
-                                            }
-                                        })
-                                        .catch((err) => {
-                                            toast.error(err.message, { position: "top-center" });
-                                        });
-                                    resolve();
-                                }, 1000);
-                            }),
-                    }}
+                    // onSelectionChange={(rows) => {
+                    //     setSelectedRows(rows);
+                    // }}
+                    // editable={{
+                    //     onRowAdd: (newData) =>
+                    //         new Promise((resolve) => {
+                    //             handleRowAdd(newData, resolve);
+                    //         }),
+                    //     onRowUpdate: (newData, oldData) =>
+                    //         new Promise((resolve) => {
+                    //             handleRowUpdate(newData, oldData, resolve);
+                    //         }),
+                    // onRowDelete: (selectedRow) =>
+                    //     new Promise((resolve, reject) => {
+                    //         const index = selectedRow.tableData.id;
+                    //         const updatedRows = [...userData];
+                    //         updatedRows.splice(index, 1);
+                    //         setTimeout(() => {
+                    //             User.remove(selectedRow._id)
+                    //                 .then((res) => {
+                    //                     if (res.data.status === true) {
+                    //                         setUserData(updatedRows);
+                    //                         toast.success("Removed", {
+                    //                             position: "top-center",
+                    //                         });
+                    //                     }
+                    //                 })
+                    //                 .catch((err) => {
+                    //                     toast.error(err.message, { position: "top-center" });
+                    //                 });
+                    //             resolve();
+                    //         }, 1000);
+                    //     }),
+                    // }}
                     // actions={[
                     //     {
                     //         icon: "delete",
@@ -146,7 +146,7 @@ const Users = (props) => {
                             fontSize: "13px",
                         },
                         tableLayout: "auto",
-                        selection: true,
+                        // selection: true,
                         exportButton: true,
                         exportAllData: true,
                         addRowPosition: "first",

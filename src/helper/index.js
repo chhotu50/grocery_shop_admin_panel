@@ -16,8 +16,10 @@ const YESNO = {
 };
 
 export const helper = {
-    BASEURL: "http://192.168.1.4:4000/",
-    IMAGE_BASEURL: "http://192.168.1.4:4000",
+    BASEURL: "https://groceryshop-api.herokuapp.com/",
+    IMAGE_BASEURL: "https://groceryshop-api.herokuapp.com",
+    // BASEURL: "http://localhost:4000/",
+    // IMAGE_BASEURL: "http://localhost:4000",
     ROLE,
     STATUS,
     YESNO,
