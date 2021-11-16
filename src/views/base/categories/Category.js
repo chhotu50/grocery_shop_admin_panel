@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import MaterialTable from "material-table";
 import { helper } from "src/helper";
 import "./category.scss";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { CSpinner } from "@coreui/react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategoryData, newCategory, removeCategory } from "src/store/slices/CategorySlice";
+import { newCategory, removeCategory } from "src/store/slices/CategorySlice";
 
 const Categories = (props) => {
     const dispatch = useDispatch();
     const category = useSelector((state) =>
         state.category.categoryData.map((o) => ({ ...o, tableData: {} }))
     );
+    const currentUser = useSelector((state) => state.currentUser.currentUserData);
     const loader = useSelector((state) => state.category.loader);
 
     const [categoryData, setCategoryData] = useState([]);
@@ -65,16 +66,10 @@ const Categories = (props) => {
             title: "Created By",
             align: "center",
             render: (item) => {
-                return item.created_by
-                    ? item.created_by.name
-                    : JSON.parse(localStorage.getItem("user.data")).name;
+                return item.created_by ? item.created_by.name : currentUser.name;
             },
         },
     ]);
-
-    useEffect(() => {
-        dispatch(fetchCategoryData());
-    }, [dispatch]);
 
     const handleImg = (e) => {
         setCategoryImg(e.target.files[0]);

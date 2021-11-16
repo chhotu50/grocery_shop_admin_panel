@@ -24,29 +24,10 @@ const UserSlice = createSlice({
             state.loader = true;
             state.hasErrors = true;
         },
-        addUser(state) {
-            state.loader = false;
-        },
-        addUserSuccess(state, { payload }) {
-            state.userData.push(payload);
-            state.loader = true;
-            state.hasErrors = false;
-        },
-        addUserFailure(state) {
-            state.loader = true;
-            state.hasErrors = true;
-        },
     },
 });
 
-export const {
-    getUsers,
-    getUsersSuccess,
-    getUsersFailure,
-    addUser,
-    addUserSuccess,
-    addUserFailure,
-} = UserSlice.actions;
+export const { getUsers, getUsersSuccess, getUsersFailure } = UserSlice.actions;
 
 export default UserSlice.reducer;
 
@@ -60,21 +41,6 @@ export function fetchUserData() {
             });
         } catch (err) {
             dispatch(getUsersFailure());
-        }
-    };
-}
-
-export function newUser(data) {
-    return async (dispatch) => {
-        dispatch(addUser());
-
-        try {
-            User.add(data).then((res) => {
-                console.log(res);
-                if (res.data.status === true) dispatch(addUserSuccess(res.data.data));
-            });
-        } catch (err) {
-            dispatch(addUserFailure());
         }
     };
 }

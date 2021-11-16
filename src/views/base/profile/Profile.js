@@ -24,10 +24,10 @@ const Profile = () => {
         newPassword: "",
         verifyPassword: "",
     });
-
-    useEffect(() => {
-        dispatch(fetchCurrentUser());
-    }, [dispatch]);
+    console.log(currentUser);
+    // useEffect(() => {
+    //     dispatch(fetchCurrentUser());
+    // }, [dispatch]);
 
     useEffect(() => {
         setUser(currentUser);

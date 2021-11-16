@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
 import User from "src/apis/User";
 
 const initialState = {
@@ -85,7 +86,13 @@ export function changeProfileImg(data) {
 
         try {
             User.profilePhoto(data).then((res) => {
-                if (res.data.status === true) dispatch(changeAvatarSucess(res.data.data.photo));
+                if (res.data.status === true) {
+                    dispatch(changeAvatarSucess(res.data.data.photo));
+                    toast.success(res.data.message, { position: "top-center" });
+                } else if (res.data.status === false) {
+                    dispatch(changeAvatarFailure());
+                    toast.error(res.data.messages, { position: "top-center" });
+                }
             });
         } catch (err) {
             dispatch(changeAvatarFailure());
@@ -99,7 +106,13 @@ export function submitDetails(data, id) {
 
         try {
             User.edit(data, id).then((res) => {
-                if (res.data.status === true) dispatch(updateDetailsSuccess(data));
+                if (res.data.status === true) {
+                    dispatch(updateDetailsSuccess(data));
+                    toast.success(res.data.message, { position: "top-center" });
+                } else if (res.data.status === false) {
+                    dispatch(updateDetailsFailure());
+                    toast.error(res.data.messages, { position: "top-center" });
+                }
             });
         } catch (err) {
             dispatch(updateDetailsFailure());

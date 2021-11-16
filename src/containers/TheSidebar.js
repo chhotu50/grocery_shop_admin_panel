@@ -21,7 +21,7 @@ const TheSidebar = () => {
     const show = useSelector((state) => state.sidebar.sidebarShow);
 
     return (
-        <CSidebar show={show} onShowChange={(val) => dispatch({ sidebarShow: val })}>
+        <CSidebar show={show} onShowChange={(val) => dispatch({ type: "set", sidebarShow: val })}>
             <CSidebarBrand className="d-md-down-none" to="/">
                 <h1 className="logo">Admin Panel</h1>
             </CSidebarBrand>

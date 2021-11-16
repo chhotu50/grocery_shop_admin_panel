@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
     CHeader,
@@ -14,10 +14,21 @@ import CIcon from "@coreui/icons-react";
 import routes from "../routes";
 
 import { TheHeaderDropdown } from "./index";
+import { fetchCurrentUser } from "src/store/slices/CurrentUserSlice";
+import { fetchCategoryData } from "src/store/slices/CategorySlice";
+import { fetchProductData } from "src/store/slices/ProductSlice";
+import { fetchUserData } from "src/store/slices/UserSlice";
 
 const TheHeader = () => {
     const dispatch = useDispatch();
-    const sidebarShow = useSelector((state) => state.sidebarShow);
+    const sidebarShow = useSelector((state) => state.sidebar.sidebarShow);
+
+    useEffect(() => {
+        dispatch(fetchCurrentUser());
+        dispatch(fetchCategoryData());
+        dispatch(fetchProductData());
+        dispatch(fetchUserData());
+    }, []);
 
     const toggleSidebar = () => {
         const val = [true, "responsive"].includes(sidebarShow) ? false : "responsive";

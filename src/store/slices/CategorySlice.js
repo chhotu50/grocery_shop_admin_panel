@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import Category from "src/apis/Category";
+import { toast } from "react-toastify";
 
 const initialState = { loader: false, categoryData: [], hasErrors: false };
 
@@ -80,7 +81,12 @@ export function newCategory(data) {
 
         try {
             Category.add(data).then((res) => {
-                if (res.data.status === true) dispatch(addCategorySuccess(res.data.data));
+                if (res.data.status === true) {
+                    dispatch(addCategorySuccess(res.data.data));
+                    toast.success(res.data.message, { position: "top-center" });
+                } else if (res.data.status === false) {
+                    toast.error(res.data.messages, { position: "top-center" });
+                }
             });
         } catch (err) {
             dispatch(addCategoryFailure());
@@ -93,7 +99,13 @@ export function removeCategory(id, data) {
         dispatch(deleteCategory());
         try {
             Category.remove(id).then((res) => {
-                if (res.data.status === true) dispatch(deleteCategorySuccess(id));
+                if (res.data.status === true) {
+                    dispatch(deleteCategorySuccess(id));
+                    toast.success(res.data.message, { position: "top-center" });
+                } else if (res.data.status === false) {
+                    dispatch(deleteCategoryFailure());
+                    toast.error(res.data.messages, { position: "top-center" });
+                }
             });
         } catch (err) {
             dispatch(deleteCategoryFailure());

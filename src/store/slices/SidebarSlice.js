@@ -8,12 +8,12 @@ const SidebarSlice = createSlice({
     name: "sidebarSlice",
     initialState,
     reducers: {
-        toggleSidebar(state, { rest }) {
+        changeState(state, { ...rest }) {
             return { ...state, ...rest };
         },
     },
 });
 
-export const { toggleSidebar } = SidebarSlice.actions;
+export const { changeState } = SidebarSlice.actions;
 
 export default SidebarSlice.reducer;

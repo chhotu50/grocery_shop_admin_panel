@@ -1,26 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
-import axios from "axios";
 import { FormControl } from "@material-ui/core";
+import { useSelector } from "react-redux";
 
 const DropDown = ({ onChange }) => {
-    const [categories, setCategories] = useState([]);
-    useEffect(() => {
-        getCategories();
-    }, []);
-    const getCategories = () => {
-        axios
-            .get("categories")
-            .then((res) => {
-                if (res.data.status === true) {
-                    setCategories(res.data.data);
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
+    const categories = useSelector((state) => state.category.categoryData);
 
     const renderCategories = () => {
         return (

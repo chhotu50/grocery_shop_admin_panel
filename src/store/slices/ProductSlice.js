@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
 import Product from "src/apis/Product";
 
 const initialState = { productData: [], toggle: false, loader: false, hasErrors: false };
@@ -23,9 +24,9 @@ const ProductSlice = createSlice({
             state.loader = false;
         },
         addProductSuccess(state, { payload }) {
+            state.productData.push(payload);
             state.loader = true;
             state.hasErrors = false;
-            state.productData.push(payload);
         },
         addProductFailure(state) {
             state.loader = true;
@@ -107,9 +108,16 @@ export function fetchProductData() {
 export function newProduct(data) {
     return async (dispatch) => {
         dispatch(addProduct());
+
         try {
             Product.add(data).then((res) => {
-                if (res.data.status === true) dispatch(addProductSuccess(res.data.data));
+                if (res.data.status === true) {
+                    dispatch(addProductSuccess(res.data.data));
+                    toast.success(res.data.message, { position: "top-center" });
+                } else if (res.data.status === false) {
+                    dispatch(addProductFailure());
+                    toast.error(res.data.messages, { position: "top-center" });
+                }
             });
         } catch (err) {
             dispatch(addProductFailure());
@@ -122,7 +130,13 @@ export function removeProduct(id, data) {
         dispatch(deleteProduct());
         try {
             Product.remove(id).then((res) => {
-                if (res.data.status === true) dispatch(deleteProductSuccess(id));
+                if (res.data.status === true) {
+                    dispatch(deleteProductSuccess(id));
+                    toast.success(res.data.message, { position: "top-center" });
+                } else if (res.data.status === false) {
+                    dispatch(deleteProductFailure());
+                    toast.error(res.data.messages, { position: "top-center" });
+                }
             });
         } catch (err) {
             dispatch(deleteProductFailure());
@@ -135,7 +149,13 @@ export function removeMultiple(data) {
         dispatch(deleteMultiple());
         try {
             Product.removeMultiple(data).then((res) => {
-                if (res.data.status === true) dispatch(deleteMultipleSuccess());
+                if (res.data.status === true) {
+                    dispatch(deleteMultipleSuccess());
+                    toast.success(res.data.message, { position: "top-center" });
+                } else if (res.data.status === false) {
+                    dispatch(deleteMultipleFailure());
+                    toast.error(res.data.messages, { position: "top-center" });
+                }
             });
         } catch (err) {
             dispatch(deleteMultipleFailure());
@@ -148,7 +168,13 @@ export function handleUpdateProduct(data) {
         dispatch(updateProduct());
         try {
             Product.update(data.id, data).then((res) => {
-                if (res.data.status === true) dispatch(updateProductSuccess(data));
+                if (res.data.status === true) {
+                    dispatch(updateProductSuccess(data));
+                    toast.success(res.data.message, { position: "top-center" });
+                } else if (res.data.status === false) {
+                    dispatch(updateProductFailure());
+                    toast.error(res.data.messages, { position: "top-center" });
+                }
             });
         } catch (err) {
             dispatch(updateProductFailure());

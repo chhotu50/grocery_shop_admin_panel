@@ -1,5 +1,4 @@
-import React, { lazy, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { lazy } from "react";
 import {
     CBadge,
     CButton,
@@ -16,17 +15,11 @@ import {
 import CIcon from "@coreui/icons-react";
 
 import MainChartExample from "../charts/MainChartExample.js";
-import { fetchCurrentUser } from "src/store/slices/CurrentUserSlice.js";
 
 const WidgetsDropdown = lazy(() => import("../widgets/WidgetsDropdown.js"));
 const WidgetsBrand = lazy(() => import("../widgets/WidgetsBrand.js"));
 
 const Dashboard = () => {
-    const dispatch = useDispatch();
-    const data = useSelector((state) => state.currentUser.currentUserData);
-    useEffect(() => {
-        dispatch(fetchCurrentUser());
-    }, []);
     return (
         <>
             <WidgetsDropdown />

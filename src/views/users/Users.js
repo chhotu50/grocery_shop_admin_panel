@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./users.scss";
 import MaterialTable from "material-table";
-import { useDispatch, useSelector } from "react-redux";
-// import User from "src/apis/User";
+import { useSelector } from "react-redux";
 import { helper } from "src/helper";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { CSpinner } from "@coreui/react";
-import { fetchUserData } from "src/store/slices/UserSlice";
 
 const Users = (props) => {
-    const dispatch = useDispatch();
     const users = useSelector((state) => state.user.userData.map((o) => ({ ...o })));
     const loader = useSelector((state) => state.user.loader);
 
-    // const [userData, setUserData] = useState([]);
     const [columns, setColumns] = useState([
         {
             title: " Name",
@@ -23,9 +19,7 @@ const Users = (props) => {
         {
             title: "Photo",
             field: "photo",
-            // editComponent: (props) => {
-            //     return <input type="file" name="photo" accept="image/*" onChange={handleImg} />;
-            // },
+
             render: (item) => (
                 <img
                     src={helper.IMAGE_BASEURL + item.photo}
@@ -69,25 +63,6 @@ const Users = (props) => {
             },
         },
     ]);
-    useEffect(() => {
-        dispatch(fetchUserData());
-    }, []);
-    // const getUser = () => {
-    //     User.list()
-    //         .then((res) => {
-    //             setToggle(true);
-    //             if (res.data.status === true) {
-    //                 setUserData(res.data.data);
-    //             } else {
-    //                 toast.error(res.data.message, {
-    //                     position: "top-center",
-    //                 });
-    //             }
-    //         })
-    //         .catch((err) => {
-    //             toast.error(err.message, { position: "top-center" });
-    //         });
-    // };
 
     if (loader) {
         return (
@@ -98,22 +73,6 @@ const Users = (props) => {
                     title=""
                     columns={columns}
                     data={users}
-                    // editable={{
-                    //     onRowAdd: (newRow) =>
-                    //         new Promise((resolve) => {
-                    //             const data = {
-                    //                 ...newRow,
-                    //                 photo: userImg,
-                    //             };
-
-                    //             const updatedRow = [...userData, data];
-                    //             setTimeout(() => {
-                    //                 dispatch(newUser(data));
-                    //                 setUserData(updatedRow);
-                    //                 resolve();
-                    //             }, 2000);
-                    //         }),
-                    // }}
                     options={{
                         headerStyle: {
                             fontSize: "1.2rem",

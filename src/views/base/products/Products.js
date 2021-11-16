@@ -10,7 +10,6 @@ import { toast, ToastContainer } from "react-toastify";
 import { CSpinner } from "@coreui/react";
 import {
     newProduct,
-    fetchProductData,
     removeProduct,
     handleUpdateProduct,
     removeMultiple,
@@ -18,7 +17,7 @@ import {
 
 const Products = (props) => {
     const dispatch = useDispatch();
-
+    const hasErrors = useSelector((state) => state.product.hasErrors);
     const loader = useSelector((state) => state.product.loader);
     const [productData, setProductData] = useState([]);
     const [productImg, setProductImg] = useState("");
@@ -35,7 +34,8 @@ const Products = (props) => {
             title: "Category",
             field: "category",
             align: "center",
-            render: (rowData) => (rowData.category_id ? rowData.category_id.title : ""),
+            render: (rowData) =>
+                rowData.category_id ? rowData.category_id.title : categoryChange._id,
             editComponent: (props) => <DropDown onChange={handleCategoryChange} />,
         },
         {
@@ -101,14 +101,9 @@ const Products = (props) => {
             },
         },
     ]);
-    // -------------------------------------------------------------------------------------
 
     useEffect(() => {
-        dispatch(fetchProductData());
         getProductData();
-        return () => {
-            setProductData([]);
-        };
     }, [dispatch]);
 
     const getProductData = () => {
@@ -121,7 +116,7 @@ const Products = (props) => {
                 toast.error(err.message, { position: "top-center" });
             });
     };
-    // ----------------------------------------------------------------------------------
+
     const handleImg = (e) => {
         setProductImg(e.target.files[0]);
     };
@@ -146,7 +141,6 @@ const Products = (props) => {
     // var sumPrice = productData.reduce(function (tot, arr) {
     //     return tot + parseInt(arr.price);
     // }, 0);
-
     if (loader) {
         return (
             <div>
@@ -194,21 +188,9 @@ const Products = (props) => {
                                 const updatedRow = [...productData, data];
                                 setTimeout(() => {
                                     dispatch(newProduct(data));
-                                    setProductData(updatedRow);
-                                    // Product.add(data)
-                                    //     .then((res) => {
-                                    //         if (res.data.status === true) {
-                                    //             toast.success(res.data.message, {
-                                    //                 position: "top-center",
-                                    //             });
-                                    //             setProductData(updatedRow);
-                                    //             getProductData();
-                                    //         }
-                                    //     })
-                                    //     .catch((err) => {
-                                    //         toast.error(err.message, { position: "top-center" });
-                                    //     });
-
+                                    if (hasErrors === false) {
+                                        setProductData(updatedRow);
+                                    }
                                     resolve();
                                 }, 2000);
                             }),
@@ -220,20 +202,8 @@ const Products = (props) => {
                                 updatedRows.splice(index, 1);
                                 setTimeout(() => {
                                     dispatch(removeProduct(selectedRow._id));
-                                    setProductData(updatedRows);
+                                    if (hasErrors === false) setProductData(updatedRows);
                                     resolve();
-                                    // Product.remove(selectedRow._id)
-                                    //     .then((res) => {
-                                    //         if (res.data.status === true) {
-                                    //             setProductData(updatedRows);
-                                    //             toast.success("Removed", {
-                                    //                 position: "top-center",
-                                    //             });
-                                    //         }
-                                    //     })
-                                    //     .catch((err) => {
-                                    //         toast.error(err.message, { position: "top-center" });
-                                    //     });
                                 }, 1000);
                             }),
                         onRowUpdate: (updatedRow, oldRow) =>
@@ -249,26 +219,7 @@ const Products = (props) => {
                                 updatedRows[index] = updatedRow;
                                 setTimeout(() => {
                                     dispatch(handleUpdateProduct({ ...data, id: oldRow._id }));
-                                    setProductData(updatedRows);
-
-                                    // Product.update(oldRow._id, data)
-                                    //     .then((res) => {
-                                    //         if (res.data.status === true) {
-                                    //             console.log(res.data);
-                                    // setProductData(updatedRows);
-                                    //             toast.success(res.data.message, {
-                                    //                 position: "top-center",
-                                    //             });
-                                    //         } else {
-                                    //             console.log(res.data);
-                                    //             toast.error(res.data.message, {
-                                    //                 position: "top-center",
-                                    //             });
-                                    //         }
-                                    //     })
-                                    //     .catch((err) => {
-                                    //         console.log(err);
-                                    //     });
+                                    if (hasErrors === false) setProductData(updatedRows);
                                     resolve();
                                 }, 1000);
                             }),
