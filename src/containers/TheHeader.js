@@ -28,7 +28,7 @@ const TheHeader = () => {
         dispatch(fetchCategoryData());
         dispatch(fetchProductData());
         dispatch(fetchUserData());
-    }, []);
+    }, [dispatch]);
 
     const toggleSidebar = () => {
         const val = [true, "responsive"].includes(sidebarShow) ? false : "responsive";

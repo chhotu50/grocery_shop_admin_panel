@@ -10,10 +10,12 @@ import store from "./store/index";
 import { icons } from "./assets/icons";
 
 import { Provider } from "react-redux";
+import Home from "./views/customer/homepage";
 React.icons = icons;
 ReactDOM.render(
     <Provider store={store}>
-        <App />
+        {/* <App /> */}
+        <Home />
     </Provider>,
     document.getElementById("root")
 );

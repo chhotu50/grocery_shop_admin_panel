@@ -1,0 +1,15 @@
+.header-wrapper {
+    height: 10vh;
+    background-color: #0b1136;
+    color: #fff;
+}
+
+.header-nav {
+    font-size: 22px;
+    font-weight: bolder;
+}
+
+.nav-link:hover {
+    color: rgb(211, 160, 66);
+    cursor: pointer;
+}
